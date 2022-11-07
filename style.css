@@ -35,7 +35,7 @@ h2{
 hr.rounded {
     border-top: 2px solid rgb(53, 53, 53);
     border-radius: 5px;
-    width:75%;
+    width: 75%;
     margin:0 auto;
 }
 .r-align-list{
@@ -89,4 +89,17 @@ button:focus.asd {
 }
 .center{
     text-align: center;
+}
+.formcolor{
+    background-color: #191919;
+    border-color: #191919;
+    color: white;
+}
+textarea:focus.formcolor{
+    background-color: #191919;
+    color: white;
+}
+input:focus.formcolor{
+    background-color: #191919;
+    color: white;
 }

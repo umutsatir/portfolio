@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "projects": "projeler",
+    "about": "hakkımda",
+    "writing": "yazılar",
+    "contact": "iletişim"
+  },
+  "hero": {
+    "title": "Dağıtık sistemler ve zincir üstü protokoller geliştiren yazılım mühendisi.",
+    "subtitle": "Şu anda node101'de. Gebze Teknik Üniversitesi son sınıf. Önceden İTÜ Blockchain.",
+    "status": "● çevrimiçi · kocaeli, tr · utc+3",
+    "lastCommit": "son commit"
+  },
+  "now": {
+    "title": "ŞU AN",
+    "building": "node101'de blockchain altyapısı",
+    "learning": "dağıtık konsensüs, Rust",
+    "reading": "Veri-Yoğun Uygulamalar Tasarımı",
+    "updated": "güncellendi"
+  },
+  "featured": {
+    "title": "Öne çıkan çalışmalar",
+    "viewAll": "Tüm projeleri gör"
+  },
+  "terminal": {
+    "placeholder": "komutlar için 'help' yaz",
+    "welcome": "komutlar için 'help' yaz"
+  },
+  "about": {
+    "title": "Hakkımda",
+    "timeline": "Zaman Çizelgesi",
+    "stack": "Teknoloji Yığını"
+  },
+  "projects": {
+    "title": "Projeler",
+    "filterAll": "tümü",
+    "filterHackathon": "hackathon",
+    "filterSaas": "saas",
+    "filterResearch": "araştırma",
+    "filterOss": "açık kaynak",
+    "viewProject": "projeye git",
+    "backToProjects": "← projelere dön"
+  },
+  "writing": {
+    "title": "Yazılar",
+    "subtitle": "Dağıtık sistemler, blockchain ve yazılım üzerine notlar.",
+    "comingSoon": "Yakında — ilk yazı hazırlanıyor."
+  },
+  "contact": {
+    "title": "İletişim",
+    "intro": "Ulaşmanın en iyi yolları:",
+    "emailLabel": "e-posta",
+    "githubLabel": "github",
+    "telegramLabel": "telegram",
+    "twitterLabel": "twitter",
+    "closing": "İtalya yüksek lisans başvuruları veya iş için e-posta en hızlısı. 24 saat içinde yanıt veririm."
+  },
+  "footer": {
+    "builtWith": "Next.js ile yapıldı. Kaynak GitHub'da.",
+    "version": "v1.0"
+  }
+}

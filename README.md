@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# umutsatir.dev
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal portfolio for Umut Satır — software engineer specializing in blockchain and distributed systems.
 
-Currently, two official plugins are available:
+## Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```
+app/[locale]/          Routes for each locale (en, tr)
+  page.tsx             Home: node graph hero, now block, featured projects, terminal
+  about/               About page with extended now, timeline, stack
+  projects/            All projects list with category filter
+  projects/[slug]/     Individual project detail (renders MDX)
+  writing/             Writing skeleton (ready for posts)
+  contact/             Contact links
+app/api/og/[slug]/     Dynamic OG image generation (1200x630)
 
-## React Compiler
+components/
+  node-graph/          d3-force SVG graph (center node = Umut, edges = connections)
+  terminal/            Interactive keyboard-driven terminal with command history
+  hero.tsx             Split layout: text left, node graph right
+  now-block.tsx        "NOW" section with current building/learning/reading
+  nav.tsx              Fixed top nav with locale toggle (EN/TR)
+  project-card.tsx     Two-column card (metadata | content)
+  timeline.tsx         Expandable vertical timeline for about page
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+content/projects/      MDX files: {slug}.en.mdx and {slug}.tr.mdx
+content/writing/       Empty — add {slug}.en.mdx to publish posts
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+lib/
+  projects.ts          Reads MDX frontmatter, returns typed ProjectMeta
+  github.ts            Fetches last public push event from GitHub API
+locales/en|tr/         Translation strings (common.json)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Run locally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
+# → http://localhost:3000 (redirects / → /en automatically)
 ```
+
+## Deploy
+
+```bash
+vercel
+# or for production:
+vercel --prod
+```
+
+## TODO before launch
+
+- [ ] **Project MDX bodies** — all `content/projects/*.mdx` files have section headers but empty bodies
+- [ ] **Email** — replace `TODO@TODO.com` in `app/[locale]/contact/page.tsx` and `components/terminal/commands.ts`
+- [ ] **Telegram** — replace `@TODO` and `https://t.me/TODO`
+- [ ] **Twitter** — replace `twitter.com/TODO`
+- [ ] **GitHub repo URL** — update in `components/footer.tsx`
+- [ ] **`public/og-default.png`** — 1200×630 fallback OG image (currently empty)
+- [ ] **`public/cv.pdf`** — real CV
+- [ ] **Roam-Swarm prize** — update `prize` field in frontmatter when finalized
+- [ ] **Turkish MDX bodies** — fill `.tr.mdx` project content

@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "projects": "projects",
+    "about": "about",
+    "writing": "writing",
+    "contact": "contact"
+  },
+  "hero": {
+    "title": "Software engineer building distributed systems and on-chain protocols.",
+    "subtitle": "Currently at node101. Final-year CS at Gebze Technical University. Previously ITU Blockchain.",
+    "status": "● online · kocaeli, tr · utc+3",
+    "lastCommit": "last commit"
+  },
+  "now": {
+    "title": "NOW",
+    "building": "blockchain infrastructure at node101",
+    "learning": "distributed consensus, Rust",
+    "reading": "Designing Data-Intensive Applications",
+    "updated": "updated"
+  },
+  "featured": {
+    "title": "Featured work",
+    "viewAll": "View all projects"
+  },
+  "terminal": {
+    "placeholder": "type 'help' to see commands",
+    "welcome": "type 'help' to see what's here"
+  },
+  "about": {
+    "title": "About",
+    "timeline": "Timeline",
+    "stack": "Stack"
+  },
+  "projects": {
+    "title": "Projects",
+    "filterAll": "all",
+    "filterHackathon": "hackathon",
+    "filterSaas": "saas",
+    "filterResearch": "research",
+    "filterOss": "oss",
+    "viewProject": "view project",
+    "backToProjects": "← back to projects"
+  },
+  "writing": {
+    "title": "Writing",
+    "subtitle": "Notes on distributed systems, blockchain, and shipping code.",
+    "comingSoon": "Coming soon — first post in progress."
+  },
+  "contact": {
+    "title": "Contact",
+    "intro": "Best ways to reach me:",
+    "emailLabel": "email",
+    "githubLabel": "github",
+    "telegramLabel": "telegram",
+    "twitterLabel": "twitter",
+    "closing": "For Italian MSc admissions inquiries or work, email is fastest. I respond within 24 hours."
+  },
+  "footer": {
+    "builtWith": "Built with Next.js. Source on GitHub.",
+    "version": "v1.0"
+  }
+}

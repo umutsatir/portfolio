@@ -28,7 +28,7 @@ export default function Nav() {
   const navLinks = [
     { href: `${basePath}/projects`, label: t("projects") },
     { href: `${basePath}/about`, label: t("about") },
-    { href: `${basePath}/writing`, label: t("writing") },
+    { href: `${basePath}/blog`, label: t("blog") },
     { href: `${basePath}/contact`, label: t("contact") },
   ];
 

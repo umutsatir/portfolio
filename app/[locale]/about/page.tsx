@@ -31,7 +31,7 @@ const stackGroups = [
   },
   {
     label: "exploring",
-    items: ["Rust", "distributed consensus", "zk-proofs", "Move"],
+    items: ["Rust", "distributed systems", "zk-proofs", "Move"],
   },
 ];
 

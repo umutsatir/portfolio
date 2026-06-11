@@ -1,0 +1,57 @@
+---
+slug: upkeep
+title: Upkeep
+oneLiner: A maintenance management system (CMMS) for creating, assigning, and tracking work orders with asset history, preventive scheduling, and inventory alerts.
+date: 2026-05
+status: shipped
+category: oss
+stack:
+  - Python
+  - FastAPI
+  - MongoDB
+  - Pydantic v2
+  - React
+  - TypeScript
+  - Tailwind CSS
+  - pytest
+role: Tech lead + full-stack
+team: 4
+event: GTU CSE 444 - Software Engineering II
+links:
+  github: https://github.com/umutsatir/upkeep
+featured: false
+---
+
+## Context
+
+GTU CSE 444 (Software Engineering II) required building a real application across the full software engineering lifecycle as a team: requirements, architecture, implementation, testing, and delivery. The course explicitly required OOP patterns and encouraged AI-assisted development.
+
+We picked a CMMS from the available project list. Maintenance management is unglamorous but genuinely complex: work orders have multi-step lifecycles, assets need full repair histories, preventive triggers fire on time or usage thresholds, and inventory has to stay in sync with all of it. It was a good fit for demonstrating layered architecture in practice.
+
+## What I built
+
+I set up the core architecture and led the team's technical decisions across a 4-person split:
+
+On the backend I built the config and MongoDB connection layer, the generic `BaseRepository` pattern that every module later extended, and the base entity classes the team built on top of. I also owned the Work Orders module end-to-end, implementing the State pattern to model the full work order lifecycle (open, assigned, in progress, completed, cancelled).
+
+On the frontend I built the shared skeleton: layout, routing (React Router), Axios client with auth, and the main dashboard. This gave the rest of the team a clean surface to add their modules without stepping on each other.
+
+I split the remaining four modules across the team and kept merge conflicts to near zero by agreeing on interface contracts before anyone wrote implementation code.
+
+## How it works
+
+The backend follows a strict layer stack: domain models define shape and business rules (Pydantic v2), repositories handle all DB access (MongoDB via motor async), services hold business logic, and FastAPI routes are thin pass-throughs. Nothing in a route touches the DB directly.
+
+Work orders use a State pattern. Each status is a class that defines which transitions are valid from it. Trying to move a work order to an invalid state raises at the domain level, not in a route condition.
+
+Preventive maintenance uses a Strategy pattern. A scheduler checks whether the trigger condition for each maintenance plan is met (time elapsed since last service, usage count past threshold, or both) and auto-generates a work order when it fires.
+
+The React frontend consumes all of this via a single Axios client with interceptors for auth headers and error normalization.
+
+## Outcome
+
+The application shipped, all tests pass. 31 passing tests across unit, integration, and e2e coverage.
+
+What I took from this project: layering matters less as theory and more as a constraint that makes team parallelism possible. When DB access is isolated in repositories and business logic is isolated in services, four people can work on four modules simultaneously and the integration surface is well-defined. I had internalized this from reading but this project was the first time I felt it in practice under time pressure.
+
+Leading the technical direction for a team of four is also different from being the sole contributor. The leverage is real but so is the cost of a bad early decision that four people are now building on top of.

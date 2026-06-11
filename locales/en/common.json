@@ -2,20 +2,20 @@
   "nav": {
     "projects": "projects",
     "about": "about",
-    "writing": "writing",
+    "blog": "blog",
     "contact": "contact"
   },
   "hero": {
     "title": "Software engineer building distributed systems and on-chain protocols.",
-    "subtitle": "Currently at node101. Final-year CS at Gebze Technical University. Previously ITU Blockchain.",
-    "status": "● online · kocaeli, tr · utc+3",
+    "subtitle": "Currently at node101. Final-year CS at Gebze Technical University. Currently software committee leader of GTU Blockchain.",
+    "status": "● online · istanbul, tr · utc+3",
     "lastCommit": "last commit"
   },
   "now": {
     "title": "NOW",
     "building": "blockchain infrastructure at node101",
-    "learning": "distributed consensus, Rust",
-    "reading": "Designing Data-Intensive Applications",
+    "learning": "distributed systems, Rust",
+    "reading": "Distributed Systems Design",
     "updated": "updated"
   },
   "featured": {
@@ -41,8 +41,8 @@
     "viewProject": "view project",
     "backToProjects": "← back to projects"
   },
-  "writing": {
-    "title": "Writing",
+  "blog": {
+    "title": "Blog",
     "subtitle": "Notes on distributed systems, blockchain, and shipping code.",
     "comingSoon": "Coming soon — first post in progress."
   },
@@ -53,7 +53,7 @@
     "githubLabel": "github",
     "telegramLabel": "telegram",
     "twitterLabel": "twitter",
-    "closing": "For Italian MSc admissions inquiries or work, email is fastest. I respond within 24 hours."
+    "closing": "For work, Telegram and email are fastest. I respond within 24 hours."
   },
   "footer": {
     "builtWith": "Built with Next.js. Source on GitHub.",

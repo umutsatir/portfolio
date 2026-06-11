@@ -1,0 +1,59 @@
+---
+slug: zkvoting-app
+title: ZK Voting on Ethereum
+oneLiner: Anonymous on-chain voting system where voters prove eligibility via a ZK-SNARK Merkle inclusion proof without revealing identity, with a blake2s nullifier preventing double votes.
+date: 2026-06
+status: shipped
+category: research
+stack:
+  - Noir
+  - Barretenberg
+  - UltraHonk
+  - Solidity
+  - Hardhat
+  - React
+  - wagmi
+  - viem
+  - Ethereum Sepolia
+role: Solo
+event: GTU CSE 496 - Senior Capstone
+links:
+  github: https://github.com/umutsatir/zkvoting-app
+featured: false
+---
+
+## Context
+
+node101 built zkVot, a ZK-based anonymous voting protocol, but it runs exclusively on the Mina blockchain. My senior capstone (CSE 496) at Gebze Technical University asked for a substantial independent engineering contribution. Porting zkVot to Ethereum was a concrete problem with real technical depth: different proof systems, different on-chain verification costs, different toolchains.
+
+The academic goal was not just to port the system but to investigate whether the PLUME nullifier scheme (ERC-7524) could replace the blake2s-based nullifier used in the original protocol, and to document the result as a reproducible finding.
+
+## What I built
+
+Solo end-to-end. ZK circuit in Noir, smart contracts in Solidity with Hardhat, React frontend with wagmi and viem, deployed to Ethereum Sepolia.
+
+The system has three roles: organizer, voter, and verifier (the contract). The organizer builds a Merkle tree of eligible voter addresses and deploys the voting contract with the root. Voters generate a ZK proof in the browser showing they hold a private key corresponding to a leaf in the tree, without revealing which leaf. The proof also includes a blake2s-derived nullifier tied to the specific vote, preventing the same voter from voting twice without linking them to any on-chain identity. The contract verifies the proof, checks the nullifier has not been used, and records the vote.
+
+## How it works
+
+The Noir circuit takes a private input (voter secret key, Merkle path) and public inputs (Merkle root, nullifier, vote choice). It asserts the leaf derived from the secret key is in the tree via the Merkle path, and that the nullifier is correctly derived from the key. The circuit produces a UltraHonk proof via Barretenberg WASM, entirely client-side in the browser.
+
+The Solidity verifier contract was generated from the circuit using `bb` (Barretenberg CLI). It exposes a single `vote(proof, publicInputs)` function. Before calling the ZK verifier it checks the nullifier mapping to prevent double votes, then writes the result if the proof is valid.
+
+wagmi and viem handle the wallet connection and contract interaction on the frontend. The proof generation step (WASM) runs in a Web Worker to avoid blocking the UI.
+
+**PLUME nullifier investigation:** ERC-7524 (PLUME) proposes a deterministic, verifiable nullifier scheme that does not require a trusted setup and has nice properties for anonymous credential systems. I attempted to integrate `distributed-lab/noir-plume v2.0.0` into the circuit. The integration failed due to an incompatibility between that library version and `nargo 1.0.0-beta.13`. I documented the version mismatch, the specific compile error, and the workaround path for future implementers. This incompatibility is not documented upstream.
+
+## Outcome
+
+31 passing tests: 13 circuit tests (Nargo), 10 contract tests (Hardhat), 8 end-to-end tests. Full flow works end-to-end on Sepolia: organizer deploys, voter generates proof in browser, proof verifies on-chain, tally updates.
+
+The PLUME investigation produced a documented incompatibility report rather than a working integration. That is a valid academic outcome: knowing where a path does not go, and why, is part of the map.
+
+## Reflections
+
+ZK tooling in 2026 is fast-moving and fragile at the edges. Version pinning is not optional. If I were starting again I would lock every dependency version on day one and avoid minor-version bumps mid-project.
+
+The client-side proof generation via WASM is genuinely impressive once it works, but the debugging experience when it does not is poor. Browser WASM errors are not helpful. A small test harness that runs the same proof generation in Node first, before touching the browser, would have saved hours.
+
+More broadly: porting between ZK ecosystems (Mina to Ethereum in this case) is harder than porting between chains at the Solidity level. The proof system, the toolchain, the on-chain verification cost model, and the browser runtime constraints are all different. The work is at those seams, not in any single component.

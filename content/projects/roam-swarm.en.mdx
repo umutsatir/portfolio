@@ -1,50 +1,89 @@
 ---
 slug: roam-swarm
 title: Roam-Swarm
-oneLiner: AI-powered urban discovery protocol targeting World, 0G, Chainlink, ENS, and Ledger tracks.
+oneLiner: Location-based discovery game where players unlock real places to get AI-generated stories and nearby recommendations.
 date: 2026-04-05
 status: shipped
 category: hackathon
 stack:
   - Solidity
   - Next.js
-  - World ID 4.0
-  - ENSv2
-  - x402
+  - TypeScript
+  - World ID
+  - ENS
   - 0G
-  - OpenClaw
+  - Chainlink
+  - x402
 role: Full-stack
 team: 3
 event: ETHGlobal Cannes 2026
-prize: "$23K-29K target across 5 tracks"
 links:
-  github: https://github.com/TODO
-  demo: https://TODO
-  twitter: https://twitter.com/TODO
+  github: https://github.com/GTU-Blockchain/roamswarm-ethglobal-cannes-2026
+  demo: https://roamswarm.vercel.app
 featured: true
 order: 1
 ---
 
 ## Context
 
-{/* Why did this project exist? What problem? What event/timeframe? 2-3 paragraphs. */}
+Most location-based apps treat places as listings - a name, a rating, a photo. They optimize for arrival, not for the walk that gets you there. We wanted the opposite: a layer on top of the city that rewards wandering, and that hands you a story when you finally stand in front of something.
+
+The mechanic we landed on borrows from Pokémon Go. You move through a city. Real-world locations are dormant nodes on a map; getting physically close unlocks them. Once unlocked, an AI agent generates a short narrative about the place - what happened there, who built it, what's worth noticing - and surfaces nearby cafés, restaurants, and points of interest a tourist guide wouldn't list.
+
+The on-chain layer is what makes this more than another travel app: every unlock is a verifiable proof that a real human was at a real place. That opens the door to community-curated routes, location-based reputation, and reward mechanics that don't collapse under bot traffic.
 
 ## What I built
 
-{/* Specifically what YOU did. Not "we built" — "I built". Mention the parts you owned. */}
+Three of us at ETHGlobal Cannes 2026, three days, full-stack. I touched every layer:
+
+- Smart contracts for the unlock registry and ENS subname issuance (Solidity, deployed to Ethereum testnet)
+- Next.js frontend with the map view, unlock flow, and AI story screen
+- World ID integration for one-human-one-account at signup
+- Chainlink integration for location verification
+- 0G integration for AI inference and persistent storage of generated content
+- x402 wiring for micropayment-gated premium content (deeper history, audio narration)
+
+The split wasn't clean - we paired heavily on architecture and split the surface area by daypart. I owned the contract layer end-to-end and most of the ENS + World ID glue on the frontend.
 
 ## How it works
 
-{/* Technical walkthrough. Architecture diagram if relevant. Code snippets welcome. */}
+A user signs in with World ID, which proves they're a unique human without leaking identity. They then claim an ENS subname under our parent name - this becomes their portable identity across the protocol.
 
-```ts
-// example code
+When they walk near a registered location, the app submits a claim. Chainlink-backed oracle data validates the GPS reading against expected accuracy bounds (you can't unlock the Eiffel Tower from a hotel room). The unlock is written on-chain, tied to their ENS identity.
+
+After unlock, the frontend calls a 0G-hosted inference endpoint. The AI generates a narrative grounded in cached context for that location, plus recommendations from a curated nearby-places index. Generated content is stored back on 0G so repeat visitors and other users see consistent stories instead of fresh hallucinations every time.
+
+x402 sits in front of premium endpoints. Want the longer history, audio version, or guided micro-route from this place? Pay a few cents, signed and settled via x402, no card flow.
+
+```solidity
+function lockPayment(bytes32 poiId, address contributor) external payable {
+    require(msg.value > 0, "No payment");
+    bytes32 k = _key(poiId, msg.sender);
+    require(payments[k].payer == address(0), "Already locked");
+    require(contributor != address(0), "Invalid contributor");
+
+    payments[k] = Payment({
+        payer: msg.sender,
+        contributor: contributor,
+        amount: msg.value,
+        released: false,
+        refunded: false
+    });
+
+    emit PaymentLocked(poiId, msg.sender, contributor, msg.value);
+}
 ```
 
 ## Outcome
 
-{/* Prize, users, lessons learned. Be honest about what did not work. */}
+We shipped a working end-to-end demo across all five integrations within the hackathon window. World ID auth flowed into ENS subname mint, geofenced unlocks wrote on-chain, 0G served AI-generated stories, and x402 gated the premium path.
+
+We submitted to the World, 0G, Chainlink, ENS, and Ledger tracks. No prizes - the judges ultimately went in another direction.
 
 ## Reflections
 
-{/* Optional: what you would do differently, what this taught you. */}
+The honest version: every piece worked, but the pitch didn't land. Hackathon judging is its own discipline. A working product that nobody quite understands in a five-minute slot will lose to a half-built product with a sharper story, and that's a fair outcome - the jury is optimizing for memorable, not complete.
+
+What I'd do differently next time: spend the final morning on narrative the same way we spent it on bugs. Pick one track and shape the demo around the judging criteria for that track instead of trying to thread five at once. And kill features that don't make the 60-second version - they cost more than they add.
+
+What I took away: production-grade integration with five protocols in three days is doable, and most of the difficulty was at the seams, not in any single piece. That's a generalizable lesson about distributed systems work outside hackathons too.

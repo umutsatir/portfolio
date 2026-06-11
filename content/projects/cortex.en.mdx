@@ -1,0 +1,49 @@
+---
+slug: cortex
+title: Cortex
+oneLiner: A local-first daily planner for macOS with drag-and-drop timebox scheduling, Eisenhower Matrix prioritization, and zero data leaving your machine.
+date: 2026-06
+status: wip
+category: oss
+stack:
+  - Tauri 2
+  - Rust
+  - React 19
+  - TypeScript
+  - Tailwind CSS v4
+  - Zustand
+  - dnd-kit
+  - Framer Motion
+  - SQLite
+role: Solo
+links:
+  github: https://github.com/umutsatir/cortex
+  demo: https://github.com/umutsatir/cortex/releases/tag/v0.1.0
+featured: false
+---
+
+## Context
+
+Most productivity apps make the same trade: convenience in exchange for your data living on someone else's server, tied to a subscription. I wanted a daily planner that worked like a native app, stored everything locally, and had no moving parts that could break or disappear.
+
+Ellie Planner was the direct inspiration for the interaction model. Brain Dump collects everything, the weekly view lets you drag tasks into time slots, the Eisenhower Matrix handles priority sorting. The goal was that exact flow, running as a native Mac binary with no backend.
+
+## What I built
+
+Solo project, every line mine. Tauri 2 gives a Rust shell around a React frontend, with SQLite as the persistence layer via `tauri-plugin-sql`. The Rust side handles the file system, DB connection, and IPC bridge. The React side is everything the user touches.
+
+Core features in v0.1.0: Brain Dump input, weekly calendar view with hourly timebox slots, drag-and-drop between Brain Dump and any time slot (dnd-kit), Eisenhower Matrix view for priority sorting, labels, and weekly navigation.
+
+## How it works
+
+State lives in Zustand stores, one per domain (tasks, timebox assignments, labels). All mutations go through a service layer that writes to SQLite first, then updates the store, so the local DB is always the source of truth and the UI is derived from it.
+
+Drag-and-drop with dnd-kit required careful droppable ID design. Brain Dump, each timebox slot, and each matrix quadrant are all valid drop targets with different semantics. The drop handler reads the destination ID prefix to decide whether it is moving a task to a time slot, reprioritizing it in the matrix, or returning it to the Brain Dump.
+
+The Rust/JS bridge is thin: a small set of Tauri commands wrap the SQLite queries and return serialized structs. React never touches the DB directly.
+
+## Outcome
+
+v0.1.0 released. Frontend builds cleanly, core features work. Active development, adding recurring tasks and keyboard shortcuts next.
+
+What I learned: Tauri 2's plugin system is well-designed once you understand the IPC model but the documentation gaps for v2 (versus v1) cost real time. The Rust/JS boundary forces you to think about serialization early, which is good discipline. dnd-kit's droppable ID design is entirely your problem and getting it right before writing drop handlers saves a lot of refactoring.

@@ -1,0 +1,59 @@
+---
+slug: zkvoting-app
+title: Ethereum Üzerinde ZK Oylama
+oneLiner: Seçmenlerin kimliklerini açıklamadan ZK-SNARK Merkle dahillik kanıtıyla uygunluklarını ispat ettiği, blake2s nullifier ile çift oy kullanımını önleyen anonim zincir-üstü oylama sistemi.
+date: 2026-06
+status: shipped
+category: research
+stack:
+  - Noir
+  - Barretenberg
+  - UltraHonk
+  - Solidity
+  - Hardhat
+  - React
+  - wagmi
+  - viem
+  - Ethereum Sepolia
+role: Solo
+event: GTU CSE 496 - Bitirme Projesi
+links:
+  github: https://github.com/umutsatir/zkvoting-app
+featured: false
+---
+
+## Context
+
+node101, ZK tabanlı anonim bir oylama protokolü olan zkVot'u geliştirdi, ancak yalnızca Mina blok zinciri üzerinde çalışıyor. Gebze Teknik Üniversitesi'ndeki bitirme projem (CSE 496), önemli bir bağımsız mühendislik katkısı gerektiriyordu. zkVot'u Ethereum'a taşımak somut bir problemdi ve gerçek teknik derinliğe sahipti: farklı kanıt sistemleri, farklı zincir-üstü doğrulama maliyetleri, farklı toolchain'ler.
+
+Akademik hedef sadece sistemi taşımak değil, PLUME nullifier şemasının (ERC-7524) orijinal protokolde kullanılan blake2s tabanlı nullifier'ın yerini alıp alamayacağını araştırmak ve sonucu tekrarlanabilir bir bulgu olarak belgelemekti.
+
+## Ne yaptım
+
+Uçtan uca solo. Noir'da ZK devresi, Hardhat ile Solidity akıllı sözleşmeler, wagmi ve viem ile React frontend, Ethereum Sepolia'ya deploy.
+
+Sistemin üç rolü var: organizatör, seçmen ve doğrulayıcı (sözleşme). Organizatör, uygun seçmen adreslerinin bir Merkle ağacını oluşturuyor ve kök ile oylama sözleşmesini deploy ediyor. Seçmenler tarayıcıda hangi yaprağa karşılık geldiklerini açıklamadan ağaçtaki bir yaprakla eşleşen özel anahtara sahip olduklarını gösteren bir ZK kanıtı üretiyor. Kanıt aynı zamanda belirli oya bağlı blake2s türevli bir nullifier içeriyor; bu seçmenin iki kez oy kullanmasını önlerken onu zincir-üstü herhangi bir kimlikle ilişkilendirmiyor. Sözleşme kanıtı doğruluyor, nullifier'ın daha önce kullanılmadığını kontrol ediyor ve oyu kaydediyor.
+
+## Nasıl çalışıyor
+
+Noir devresi özel girdiler (seçmen gizli anahtarı, Merkle yolu) ve genel girdiler (Merkle kökü, nullifier, oy tercihi) alıyor. Gizli anahtardan türetilen yaprağın Merkle yoluyla ağaçta bulunduğunu ve nullifier'ın anahtardan doğru türetildiğini doğruluyor. Devre, tamamen tarayıcıda istemci tarafında Barretenberg WASM üzerinden bir UltraHonk kanıtı üretiyor.
+
+Solidity doğrulayıcı sözleşmesi, `bb` (Barretenberg CLI) kullanılarak devreden üretildi. Tek bir `vote(proof, publicInputs)` fonksiyonu sunuyor. ZK doğrulayıcıyı çağırmadan önce çift oy kullanımını önlemek için nullifier eşlemesini kontrol ediyor, ardından kanıt geçerliyse sonucu yazıyor.
+
+wagmi ve viem frontend'de cüzdan bağlantısını ve sözleşme etkileşimini yönetiyor. Kanıt üretim adımı (WASM), UI'yi bloke etmemek için bir Web Worker içinde çalışıyor.
+
+**PLUME nullifier araştırması:** ERC-7524 (PLUME), güvenilir kurulum gerektirmeyen ve anonim kimlik bilgisi sistemleri için iyi özelliklere sahip deterministik, doğrulanabilir bir nullifier şeması öneriyor. `distributed-lab/noir-plume v2.0.0`'ı devreye entegre etmeye çalıştım. Entegrasyon, bu kütüphane sürümü ile `nargo 1.0.0-beta.13` arasındaki uyumsuzluk nedeniyle başarısız oldu. Sürüm uyuşmazlığını, spesifik derleme hatasını ve gelecekteki uygulayıcılar için geçici çözüm yolunu belgeledim. Bu uyumsuzluk upstream'de belgelenmemişti.
+
+## Sonuç
+
+31 geçen test: 13 devre testi (Nargo), 10 sözleşme testi (Hardhat), 8 uçtan uca test. Sepolia'da tam akış uçtan uca çalışıyor: organizatör deploy ediyor, seçmen tarayıcıda kanıt üretiyor, kanıt zincir-üstünde doğrulanıyor, sayım güncelleniyor.
+
+PLUME araştırması çalışan bir entegrasyon yerine belgelenmiş bir uyumsuzluk raporu üretti. Bu geçerli bir akademik çıktı: bir yolun nereye gitmediğini ve neden gitmediğini bilmek haritanın bir parçası.
+
+## Düşünceler
+
+2026'da ZK tooling hızlı ilerliyor ve kenarlarda kırılgan. Bağımlılık sürümlerini sabitlemek zorunlu. Yeniden başlasaydım ilk günden her bağımlılığı kilitler ve proje ortasında küçük sürüm yükseltmelerinden kaçınırdım.
+
+WASM üzerinden istemci tarafı kanıt üretimi çalıştığında gerçekten etkileyici ama çalışmadığında hata ayıklama deneyimi zayıf. Tarayıcı WASM hataları yardımcı değil. Tarayıcıya dokunmadan önce aynı kanıt üretimini Node'da çalıştıran küçük bir test koşumu saatler kazandırırdı.
+
+Daha genel olarak: ZK ekosistemler arasında taşıma (bu durumda Mina'dan Ethereum'a), Solidity düzeyinde chain'ler arasında taşımadan daha zor. Kanıt sistemi, toolchain, zincir-üstü doğrulama maliyet modeli ve tarayıcı runtime kısıtlamaları hepsi farklı. Asıl çalışma bu birleşim noktalarında, tek bir bileşende değil.

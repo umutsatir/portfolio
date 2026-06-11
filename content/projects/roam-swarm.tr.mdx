@@ -1,50 +1,89 @@
 ---
 slug: roam-swarm
 title: Roam-Swarm
-oneLiner: World, 0G, Chainlink, ENS ve Ledger parçalarını hedefleyen yapay zeka destekli kentsel keşif protokolü.
+oneLiner: Oyuncuların gerçek dünyada yer keşfederek o yerin hikâyesini ve çevresindeki önerileri AI'dan aldığı konum tabanlı keşif oyunu.
 date: 2026-04-05
 status: shipped
 category: hackathon
 stack:
   - Solidity
   - Next.js
-  - World ID 4.0
-  - ENSv2
-  - x402
+  - TypeScript
+  - World ID
+  - ENS
   - 0G
-  - OpenClaw
+  - Chainlink
+  - x402
 role: Full-stack
 team: 3
 event: ETHGlobal Cannes 2026
-prize: "5 kategoride $23K-29K hedef"
 links:
-  github: https://github.com/TODO
-  demo: https://TODO
-  twitter: https://twitter.com/TODO
+  github: https://github.com/GTU-Blockchain/roamswarm-ethglobal-cannes-2026
+  demo: https://roamswarm.vercel.app
 featured: true
 order: 1
 ---
 
-## Bağlam
+## Context
 
-{/* */}
+Konum tabanlı uygulamaların çoğu mekânları bir liste gibi görür - isim, puan, fotoğraf. Varış noktasına optimize ederler, oraya giden yola değil. Biz tam tersini istedik: şehrin üzerine, gezmeyi ödüllendiren bir katman; ve sonunda bir şeyin önünde durduğunda sana bir hikâye veren bir şey.
 
-## Ne inşa ettim
+Üzerine yerleştiğimiz mekanik Pokémon Go'dan ödünç. Şehirde geziyorsun. Gerçek dünyadaki yerler haritada uyuyan düğümler - fiziksel olarak yaklaşman onları açıyor. Açıldıklarında bir AI ajanı o yer hakkında kısa bir anlatı üretiyor: orada ne yaşandı, kim inşa etti, neye dikkat etmeli; ve çevredeki kafeleri, restoranları, sıradan bir tur rehberinin listelemeyeceği yerleri gösteriyor.
 
-{/* */}
+Zincir üstü katman, bunu sıradan bir gezi uygulamasından ayıran şey: her açılış, gerçek bir insanın gerçek bir yerde olduğunu doğrulanabilir şekilde kanıtlıyor. Bu da topluluk tarafından düzenlenmiş rotalara, konum tabanlı itibara ve bot trafiğinde çökmeyecek ödül mekaniklerine kapı açıyor.
+
+## Ne yaptım
+
+ETHGlobal Cannes 2026'da üç kişiydik, üç gün, full-stack. Her katmana dokundum:
+
+- Açılış kayıt defteri ve ENS subname dağıtımı için akıllı sözleşmeler (Solidity, Ethereum testnet'e deploy)
+- Harita görünümü, açılış akışı ve AI hikâye ekranı dahil Next.js frontend
+- Kayıtta tek-insan-tek-hesap için World ID entegrasyonu
+- Konum doğrulaması için Chainlink entegrasyonu
+- AI inference ve üretilen içeriğin kalıcı depolanması için 0G entegrasyonu
+- Premium içeriği (daha derin tarih, sesli anlatım) micropayment ile açan x402 entegrasyonu
+
+İş bölümü çok keskin değildi - mimari için çokça eşli çalıştık ve gün içinde alanları paylaştık. Sözleşme katmanını uçtan uca ve frontend'de ENS + World ID bağlantılarının çoğunu ben yönettim.
 
 ## Nasıl çalışıyor
 
-{/* */}
+Kullanıcı World ID ile giriş yapıyor; bu kimlik sızdırmadan tek bir insan olduğunu kanıtlıyor. Sonra bizim üst alan adımız altında bir ENS subname alıyor - bu, protokol içinde taşınabilir kimliği oluyor.
 
-```ts
-// örnek kod
+Kayıtlı bir yerin yakınında yürüdüğünde uygulama bir talep gönderiyor. Chainlink destekli oracle verisi GPS okumasını beklenen hassasiyet sınırlarına göre doğruluyor (Eyfel Kulesi'ni otel odasından açamıyorsun). Açılış zincir üstüne yazılıyor, ENS kimliğine bağlanıyor.
+
+Açılıştan sonra frontend, 0G üzerinde barındırılan bir inference endpoint'ini çağırıyor. AI, o yer için önbelleğe alınmış bağlama dayanan bir anlatı ve düzenlenmiş bir yakın-yer indeksinden öneriler üretiyor. Üretilen içerik tekrar 0G'ye yazılıyor; böylece tekrar gelenler ve diğer kullanıcılar her seferinde yeni halüsinasyonlar yerine tutarlı hikâyeler görüyor.
+
+x402 premium endpoint'lerin önünde duruyor. Bir yerin daha uzun tarihini, sesli versiyonunu ya da oradan başlayan mikro rotayı mı istiyorsun? Birkaç sent öde, x402 ile imzalanıp tahsil edilsin, kart akışı yok.
+
+```solidity
+function lockPayment(bytes32 poiId, address contributor) external payable {
+    require(msg.value > 0, "No payment");
+    bytes32 k = _key(poiId, msg.sender);
+    require(payments[k].payer == address(0), "Already locked");
+    require(contributor != address(0), "Invalid contributor");
+
+    payments[k] = Payment({
+        payer: msg.sender,
+        contributor: contributor,
+        amount: msg.value,
+        released: false,
+        refunded: false
+    });
+
+    emit PaymentLocked(poiId, msg.sender, contributor, msg.value);
+}
 ```
 
 ## Sonuç
 
-{/* */}
+Hackathon süresi içinde beş entegrasyonun hepsini içeren uçtan uca çalışan bir demo yayınladık. World ID girişi ENS subname mint'ine akıyor, geofence'li açılışlar zincir üstüne yazılıyor, 0G AI hikâyelerini servis ediyor ve x402 premium yolu kapatıyordu.
+
+World, 0G, Chainlink, ENS ve Ledger track'lerine submit ettik. Ödül yok - jüri başka bir yöne gitti.
 
 ## Düşünceler
 
-{/* */}
+Dürüst hali: her parça çalıştı ama pitch tutmadı. Hackathon jürilerine sunum kendi başına ayrı bir disiplin. Beş dakikalık bir slotta kimsenin tam anlayamadığı çalışan bir ürün, daha keskin hikâyesi olan yarım bir ürüne kaybeder, ve bu adil bir sonuç - jüri akılda kalıcılığa optimize ediyor, eksiksizliğe değil.
+
+Bir dahaki sefer farklı yapacaklarım: son sabahı bug'lara verdiğimiz kadar anlatıya da vermek. Beş track'i aynı anda iplemeye çalışmak yerine bir track seçip demoyu o track'in jüri kriterleri etrafında şekillendirmek. Ve 60 saniyelik versiyona girmeyen özellikleri kesmek - kattıklarından fazlasına mal oluyorlar.
+
+Çıkardığım ders: üç günde beş protokolle production seviyesinde entegrasyon yapılabiliyor, ve zorluğun çoğu tek bir parçada değil parçaların birleştiği yerlerdeydi. Bu, hackathon dışı dağıtık sistem işine de genellenebilen bir ders.

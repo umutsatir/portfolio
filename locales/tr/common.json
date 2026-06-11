@@ -2,20 +2,20 @@
   "nav": {
     "projects": "projeler",
     "about": "hakkımda",
-    "writing": "yazılar",
+    "blog": "blog",
     "contact": "iletişim"
   },
   "hero": {
     "title": "Dağıtık sistemler ve zincir üstü protokoller geliştiren yazılım mühendisi.",
-    "subtitle": "Şu anda node101'de. Gebze Teknik Üniversitesi son sınıf. Önceden İTÜ Blockchain.",
-    "status": "● çevrimiçi · kocaeli, tr · utc+3",
+    "subtitle": "Şu anda node101'de. Gebze Teknik Üniversitesi son sınıf. Şu anda GTU Blockchain yazılım komitesi lideri.",
+    "status": "● çevrimiçi · istanbul, tr · utc+3",
     "lastCommit": "son commit"
   },
   "now": {
     "title": "ŞU AN",
     "building": "node101'de blockchain altyapısı",
-    "learning": "dağıtık konsensüs, Rust",
-    "reading": "Veri-Yoğun Uygulamalar Tasarımı",
+    "learning": "dağıtık sistemler, Rust",
+    "reading": "Dağıtık Sistemler Tasarımı",
     "updated": "güncellendi"
   },
   "featured": {
@@ -41,8 +41,8 @@
     "viewProject": "projeye git",
     "backToProjects": "← projelere dön"
   },
-  "writing": {
-    "title": "Yazılar",
+  "blog": {
+    "title": "Blog",
     "subtitle": "Dağıtık sistemler, blockchain ve yazılım üzerine notlar.",
     "comingSoon": "Yakında — ilk yazı hazırlanıyor."
   },
@@ -53,7 +53,7 @@
     "githubLabel": "github",
     "telegramLabel": "telegram",
     "twitterLabel": "twitter",
-    "closing": "İtalya yüksek lisans başvuruları veya iş için e-posta en hızlısı. 24 saat içinde yanıt veririm."
+    "closing": "İş için e-posta ve telegram en hızlı yollar. 24 saat içinde yanıt veririm."
   },
   "footer": {
     "builtWith": "Next.js ile yapıldı. Kaynak GitHub'da.",

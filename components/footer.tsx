@@ -16,7 +16,7 @@ export default function Footer() {
         <span className="text-mono" style={{ color: "var(--color-text-faint)" }}>
           {t("builtWith")}{" "}
           <a
-            href="https://github.com/umutsatir/umutsatir-dev"
+            href="https://github.com/umutsatir/portfolio"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[var(--color-text-dim)] transition-colors"

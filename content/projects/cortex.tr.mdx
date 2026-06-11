@@ -1,0 +1,49 @@
+---
+slug: cortex
+title: Cortex
+oneLiner: Sürükle-bırak timebox planlaması, Eisenhower Matrisi önceliklendirmesi ve sıfır harici veri ile macOS için yerel-öncelikli günlük planlayıcı.
+date: 2026-06
+status: wip
+category: oss
+stack:
+  - Tauri 2
+  - Rust
+  - React 19
+  - TypeScript
+  - Tailwind CSS v4
+  - Zustand
+  - dnd-kit
+  - Framer Motion
+  - SQLite
+role: Solo
+links:
+  github: https://github.com/umutsatir/cortex
+  demo: https://github.com/umutsatir/cortex/releases/tag/v0.1.0
+featured: false
+---
+
+## Context
+
+Üretkenlik uygulamalarının çoğu aynı takas'ı yapıyor: verilerinin başkasının sunucusunda yaşaması ve bir aboneliğe bağlı kalması karşılığında kolaylık. Ben native uygulama gibi çalışan, her şeyi yerel depolayan ve bozulabilecek ya da kaybolabilecek hareketli parçası olmayan bir günlük planlayıcı istedim.
+
+Etkileşim modeli için doğrudan ilham Ellie Planner'dı. Brain Dump her şeyi topluyor, haftalık görünüm görevleri zaman dilimlerine sürüklemene izin veriyor, Eisenhower Matrisi öncelik sıralamasını hallediyor. Hedef, tam bu akışın backend olmadan native Mac binary olarak çalışmasıydı.
+
+## Ne yaptım
+
+Solo proje, her satır benim. Tauri 2, `tauri-plugin-sql` üzerinden SQLite ile bir React frontend etrafında Rust kabuğu sağlıyor. Rust tarafı dosya sistemi, DB bağlantısı ve IPC köprüsünü yönetiyor. React tarafı kullanıcının dokunduğu her şey.
+
+v0.1.0'daki temel özellikler: Brain Dump girişi, saatlik timebox slotları olan haftalık takvim görünümü, Brain Dump ile herhangi bir zaman slotu arasında sürükle-bırak (dnd-kit), öncelik sıralaması için Eisenhower Matrisi görünümü, etiketler ve haftalık navigasyon.
+
+## Nasıl çalışıyor
+
+State, domain başına bir tane olmak üzere (görevler, timebox atamaları, etiketler) Zustand store'larında yaşıyor. Tüm mutasyonlar önce SQLite'a yazan, sonra store'u güncelleyen bir servis katmanından geçiyor; böylece yerel DB her zaman gerçeğin kaynağı oluyor ve UI ondan türetiliyor.
+
+dnd-kit ile sürükle-bırak, dikkatli droppable ID tasarımı gerektirdi. Brain Dump, her timebox slotu ve her matris çeyreği farklı semantiklerle geçerli bırakma hedefleri. Bırakma işleyicisi, bir görevi zaman slotuna taşıyıp taşımadığına, matriste önceliğini değiştirip değiştirmediğine veya Brain Dump'a geri döndürüp döndürmediğine karar vermek için hedef ID önekini okuyor.
+
+Rust/JS köprüsü ince: küçük bir Tauri komutları seti SQLite sorgularını sarıp serileştirilmiş struct'lar döndürüyor. React hiçbir zaman doğrudan DB'ye dokunmuyor.
+
+## Sonuç
+
+v0.1.0 yayınlandı. Frontend temiz build alıyor, temel özellikler çalışıyor. Aktif geliştirme devam ediyor, sırada tekrarlayan görevler ve klavye kısayolları var.
+
+Öğrendiklerim: Tauri 2'nin plugin sistemi IPC modelini anladıktan sonra iyi tasarlanmış ama v2'ye ait dokümantasyon eksiklikleri (v1 ile karşılaştırıldığında) gerçek zaman kaybettirdi. Rust/JS sınırı serileştirme hakkında erken düşünmeye zorluyor, bu iyi bir disiplin. dnd-kit'in droppable ID tasarımı tamamen senin sorunun ve bırakma işleyicilerini yazmadan önce bunu doğru yapmak çok sayıda refactoring'den kurtarıyor.

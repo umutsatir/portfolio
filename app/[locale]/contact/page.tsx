@@ -14,8 +14,8 @@ export async function generateMetadata() {
 const contactLinks = [
   {
     label: "email",
-    display: "TODO@TODO.com",
-    href: "mailto:TODO@TODO.com",
+    display: "umutstr54@gmail.com",
+    href: "mailto:umutstr54@gmail.com",
   },
   {
     label: "github",
@@ -24,13 +24,13 @@ const contactLinks = [
   },
   {
     label: "telegram",
-    display: "@TODO",
-    href: "https://t.me/TODO",
+    display: "@umutsatir",
+    href: "https://t.me/umutsatir",
   },
   {
     label: "twitter",
-    display: "twitter.com/TODO",
-    href: "https://twitter.com/TODO",
+    display: "twitter.com/umut_satir",
+    href: "https://twitter.com/umut_satir",
   },
 ];
 

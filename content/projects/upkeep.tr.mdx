@@ -1,0 +1,57 @@
+---
+slug: upkeep
+title: Upkeep
+oneLiner: Iş emirlerini oluşturup atayıp takip eden, varlık geçmişi tutan, önleyici bakım planlayan ve stok uyarısı veren bir bakım yönetim sistemi.
+date: 2026-05
+status: shipped
+category: oss
+stack:
+  - Python
+  - FastAPI
+  - MongoDB
+  - Pydantic v2
+  - React
+  - TypeScript
+  - Tailwind CSS
+  - pytest
+role: Teknik lider + full-stack
+team: 4
+event: GTU CSE 444 - Yazılım Mühendisliği II
+links:
+  github: https://github.com/umutsatir/upkeep
+featured: false
+---
+
+## Context
+
+GTU CSE 444 dersi, bir uygulamayı tam yazılım mühendisliği döngüsünde (gereksinimler, mimari, uygulama, test, teslimat) takım olarak geliştirmeyi zorunlu kıldı. Ders özellikle OOP pattern'leri ve AI destekli geliştirme pratiğini bekliyordu.
+
+Verilen proje listesinden CMMS seçtik. Bakım yönetimi sıradan görünse de gerçekten karmaşık: iş emirlerinin çok adımlı yaşam döngüleri var, varlıkların tam tamir geçmişi tutulması gerekiyor, önleyici tetikleyiciler zaman veya kullanım eşiklerine göre ateşleniyor ve envanter her şeyle senkronda kalmalı. Katmanlı mimariyi gerçek bir modül üzerinde göstermek için iyi bir tercihti.
+
+## Ne yaptım
+
+Çekirdek mimariyi kurdum ve 4 kişilik takımın teknik kararlarını yönettim:
+
+Backend tarafında config ve MongoDB bağlantı katmanını, her modülün sonradan genişlettiği generic `BaseRepository` pattern'ini ve takımın üzerine inşa ettiği temel entity sınıflarını yazdım. Work Orders modülünü de uçtan uca üstlendim: iş emri yaşam döngüsünü (açık, atandı, devam ediyor, tamamlandı, iptal edildi) modellemek için State pattern'i uyguladım.
+
+Frontend tarafında paylaşılan iskeleti kurdum: layout, routing (React Router), auth interceptor'lı Axios client ve ana dashboard. Bu, takımın geri kalanının birbirinin üstüne basmadan kendi modüllerini ekleyebileceği temiz bir yüzey sağladı.
+
+Kalan dört modülü takıma böldüm ve uygulama kodunu yazmadan önce arayüz sözleşmeleri üzerinde anlaşarak merge çakışmalarını sıfıra yakın tuttum.
+
+## Nasıl çalışıyor
+
+Backend katı bir yığın izliyor: domain modeller şekli ve iş kurallarını tanımlıyor (Pydantic v2), repository'ler tüm DB erişimini kapsüllüyor (motor async ile MongoDB), servisler iş mantığını barındırıyor, FastAPI route'ları ince geçiş katmanı. Hiçbir route doğrudan DB'ye dokunmuyor.
+
+İş emirleri State pattern kullanıyor. Her durum, o durumdan hangi geçişlerin geçerli olduğunu tanımlayan bir sınıf. Geçersiz bir duruma taşımaya çalışmak route koşulunda değil, domain katmanında hata fırlatıyor.
+
+Önleyici bakım Strategy pattern kullanıyor. Bir zamanlayıcı her bakım planı için tetik koşulunun sağlanıp sağlanmadığını kontrol ediyor (son servisten bu yana geçen süre, kullanım sayısı eşiği veya ikisi birden) ve ateşlendiğinde otomatik iş emri üretiyor.
+
+React frontend bunların hepsini hata normalleştirme ve auth header interceptor'lı tek bir Axios client üzerinden tüketiyor.
+
+## Sonuç
+
+Uygulama teslim edildi, tüm testler geçiyor. Unit, entegrasyon ve e2e kapsamasında 31 geçen test.
+
+Bu projeden çıkardığım şey: katmanlama, teori olarak değil takım paralelliğini mümkün kılan bir kısıt olarak anlam kazanıyor. DB erişimi repository'lerde, iş mantığı servislerde izole olduğunda dört kişi dört modül üzerinde aynı anda çalışabiliyor ve entegrasyon yüzeyi iyi tanımlı kalıyor. Bunu okuyarak içselleştirmiştim ama bu proje, zaman baskısı altında pratikte hissettiğim ilk andı.
+
+Dört kişilik bir takıma teknik liderlik etmek, tek katkıda bulunmaktan da farklı. Kaldıraç gerçek ama dört kişinin üzerine inşa ettiği kötü bir erken kararın bedeli de öyle.

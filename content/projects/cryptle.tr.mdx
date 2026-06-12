@@ -1,0 +1,63 @@
+---
+slug: cryptle-ethistanbul-2025
+title: Cryptle
+oneLiner: ETH stake'li ve 1v1 modlu zincir-üstü Wordle; senkron transaction receipt'leri ve gerçek zamanlı WebSocket event'lerini showcase etmek için RISE Chain üzerinde geliştirildi.
+date: 2025-09
+status: shipped
+category: hackathon
+stack:
+  - Solidity
+  - Foundry
+  - Next.js 15
+  - wagmi v2
+  - viem
+  - TypeScript
+  - Tailwind CSS v4
+  - RISE Chain
+  - WebSocket
+  - porto
+role: Contract mimarisi + frontend hook'ları + wallet entegrasyonu
+team: 5
+event: ETHGlobal Istanbul 2025
+prize: "RISE Chain kategorisi 1.liği ($1,500)"
+links:
+  github: https://github.com/GTU-Blockchain/cryptle-ethistanbul-2025
+  twitter: https://x.com/GtuEduTr/status/1966464804538765516
+featured: false
+---
+
+## Context
+
+ETHGlobal Istanbul 2025. RISE Chain az önce iki önemli özellik yayınlamıştı: polling gerektirmeden senkron olarak transaction receipt döndüren `eth_sendRawTransactionSync` ve gerçek zamanlı event subscription için WebSocket endpoint'i `rise_subscribe`. Zorluk, bu özelliklerin gerçekten işe yaradığı bir kullanım senaryosu bulmaktı; sadece checkbox olarak kullanmak değil.
+
+Wordle tam oturdu. Her tahmin bir transaction olan kelime oyunu, oyun gibi hissettirmek için hızlı geri bildirim istiyor. Senkron receipt'ler, UI'nin polling döngüleri olmadan her tahminden hemen sonra güncellenebileceği anlamına geliyordu. WebSocket subscription'ları ise 1v1 modun rakibin gridini gerçek zamanlı gösterebileceği anlamına geliyordu.
+
+Commit-reveal mekaniği bariz sorunu çözdü: tahminler zincir-üstünde düz metin olsaydı mempool'u izleyen herkes cevabı kendi tahminini göndermeden önce okuyabilirdi. Her tahmin, kelime ile session başına oluşturulan bir salt'ın keccak256 hash'i olarak commit ediliyor, ardından ayrı bir transaction'da açıklanıyor.
+
+## Ne yaptım
+
+Beş kişilik takım. Contract mimarisini, frontend hook'larını (`useWordleContract`, `useWordleEvents`, `useRiseWebSocket`), porto ile wallet entegrasyonunu (embedded wallet) ve deploy ile sync script'lerini ben üstlendim.
+
+Contract hem tek oyunculu hem de 1v1 modları, her tahmin için commit-reveal, stake yönetimini (depozito, kazanma bonusu, kaybetme kesintisi) ve oyun durum makinesini yönetiyor. Frontend hook'ları bunların tümünü, UI bileşenlerinin contract detaylarına doğrudan dokunmadan tükettiği temiz bir arayüze soyutluyor.
+
+## Nasıl çalışıyor
+
+Oyun başlangıcında oyuncu ETH stake ediyor ve contract onu aktif olarak kaydediyor. Her tahmin iki transaction'dan geçiyor: commit (kelime + salt'ın keccak256 hash'i) ve reveal (düz metin kelime + salt). Contract, reveal'i hash'leyip commit ile eşleştiğini kontrol ediyor, ardından tahmini hedef kelimeye göre değerlendirip harf bazlı geri bildirim döndürüyor (doğru, mevcut, yok).
+
+1v1 modda her iki oyuncu da aynı gizli kelimeye doğru çalışıyor. Her oyuncu diğerinin gridini (harf pozisyonları ve renkler) görebiliyor ama tahmin edilen harfleri değil; pozisyonel bilgi sızıyor ama spesifik tahminler sızmıyor. WebSocket subscription her iki gridi polling olmadan senkronize tutuyor.
+
+Kazanma durumunda: stake iade ediliyor artı contract'ın ödül havuzundan %50 bonus. Kaybetme durumunda (tüm tahminler tüketildi): stake müsadere ediliyor.
+
+## Sonuç
+
+RISE Chain kategorisi 1.liği, 1.500 dolar.
+
+Tek oyunculu ve 1v1 modların ikisi de demo'da uçtan uca çalıştı. Liderboard, gönderim son tarihinden önce canlı kullanıcı verisi mevcut olmadığından mock data ile yayınlandı.
+
+RISE Chain'e özgü özellikler burada gerçek iş yaptı, kozmetik entegrasyon değil. Senkron receipt'ler tahmin-geri bildirim döngüsünü bir saniyenin altında tuttu. WebSocket subscription 1v1 grid senkronizasyonunu native hissettirdi.
+
+## Düşünceler
+
+Hackathon zaman baskısı liderboard'da kendini gösteriyor. Bozuk canlı veri yerine kesmeyi tercih etmek doğru karardı ama en görünür sosyal özelliği yarım bıraktı. Çalışan bir çekirdeğe odaklanıp eksikleri etiketlemek onları gizlemekten iyi, ama boşluğun planlamada daha erken fark edilmesi gerekirdi.
+
+Commit-reveal pattern'i de hafife almak kolay bir UX sürtünmesi ekliyor. Tahmin başına bir yerine iki transaction, etkileşim maliyetini ikiye katlıyor. Hızlı receipt'li bir chain'de bu yönetilebilir, ama daha yavaş bir chain'de oyun hissini tamamen öldürürdü. RISE Chain seçimi rastgele değildi.

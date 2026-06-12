@@ -1,0 +1,57 @@
+---
+slug: umutsatir-dev
+title: umutsatir.dev
+oneLiner: Personal portfolio site with an interactive d3-force node graph, terminal, and EN/TR i18n, built to reflect the distributed systems and blockchain theme of the work it presents.
+date: 2026-06
+status: wip
+category: oss
+stack:
+  - Next.js 15
+  - TypeScript
+  - Tailwind CSS v4
+  - d3-force
+  - Framer Motion
+  - next-intl
+  - MDX
+role: Solo
+links:
+  github: https://github.com/umutsatir/umutsatir-dev
+  demo: https://umutsatir.dev
+featured: false
+---
+
+## Context
+
+Most developer portfolios pick a template and fill it in. The result looks like every other portfolio: hero with a waving hand emoji, a skills grid with percentage bars, a projects section with three identical cards. The site you are currently reading is an attempt at something different.
+
+The constraint I set: the design had to mean something relative to the work it presents. If the projects are about distributed systems and p2p protocols, the site should feel like a node in a network, not a brochure.
+
+## What I built
+
+Solo, every line mine.
+
+The centerpiece is an interactive node graph on the homepage, built with d3-force and a custom SVG renderer. Each node represents a project, employer, or ecosystem I have worked with. The simulation runs with force-directed layout, idle perturbation every few seconds, and hover states that highlight connected edges. Click a project node and it navigates to the project page. On mobile the graph freezes to a static layout.
+
+Below the graph, a functional terminal accepts a small set of commands (`whoami`, `ls projects/`, `cat about.md`, `uptime`, and a few easter eggs). It has command history, tab autocomplete, and an `aria-live` region for screen reader output.
+
+The site is EN/TR bilingual via next-intl with cookie-based locale persistence. Project content is MDX with frontmatter-driven metadata. OG images are dynamically generated per project via `next/og`.
+
+## How it works
+
+The node graph simulation runs in a `useEffect` with a cleanup function. Nodes are SVG `<circle>` elements, links are `<line>` elements, labels are `<text>` elements. Everything is rendered in a single SVG viewport. The simulation stops after alpha drops below 0.001 (roughly 4 seconds of idle), then only reacts to mouse events.
+
+`prefers-reduced-motion` freezes the graph after one tick and disables the idle perturbation. Keyboard navigation tabs through nodes and activates them on Enter.
+
+Project pages are generated from MDX files with a consistent frontmatter schema (slug, title, stack, date, status, category, links). `lib/projects.ts` reads and sorts them at build time. The `[slug]` route renders the MDX with custom components for prose, code blocks (shiki, github-dark theme), and metadata.
+
+The GitHub last-commit display in the hero fetches from the public events API server-side with a 30-minute revalidation window, degrading gracefully to hidden if the fetch fails.
+
+## Outcome
+
+This site. Active development.
+
+## Reflections
+
+The node graph was the hardest part to get right. d3-force and React have different ideas about who owns the DOM: d3 wants to mutate it directly, React wants to own it entirely. The solution was to keep d3 in charge of the simulation math only (position data) and let React render from that data on each animation frame. This required a careful `useRef` / `useState` split and cost more time than expected.
+
+The EN/TR split surfaces an underappreciated cost: every piece of copy exists twice. Keeping them in sync as the site evolves is a real maintenance burden. For a solo project with no translation workflow, the honest answer is the TR version will drift. Worth knowing before committing to i18n.

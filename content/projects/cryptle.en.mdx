@@ -1,0 +1,63 @@
+---
+slug: cryptle-ethistanbul-2025
+title: Cryptle
+oneLiner: On-chain Wordle with ETH staking and a 1v1 mode, built on RISE Chain to showcase synchronous transaction receipts and real-time WebSocket events.
+date: 2025-09
+status: shipped
+category: hackathon
+stack:
+  - Solidity
+  - Foundry
+  - Next.js 15
+  - wagmi v2
+  - viem
+  - TypeScript
+  - Tailwind CSS v4
+  - RISE Chain
+  - WebSocket
+  - porto
+role: Contract architecture + frontend hooks + wallet integration
+team: 5
+event: ETHGlobal Istanbul 2025
+prize: "1st place, RISE Chain track ($1,500)"
+links:
+  github: https://github.com/GTU-Blockchain/cryptle-ethistanbul-2025
+  twitter: https://x.com/GtuEduTr/status/1966464804538765516
+featured: false
+---
+
+## Context
+
+ETHGlobal Istanbul 2025. RISE Chain had just released two features worth building on: `eth_sendRawTransactionSync`, which returns a transaction receipt synchronously instead of requiring polling, and `rise_subscribe`, a WebSocket endpoint for real-time event subscriptions. The challenge was finding a use case where those properties actually mattered, not just using them as a checkbox.
+
+Wordle fit. A word game where every guess is a transaction needs fast feedback to feel like a game rather than a blockchain demo. Synchronous receipts meant the UI could update immediately after each guess without polling loops. WebSocket subscriptions meant the 1v1 mode could show the opponent's grid updating in real time.
+
+The commit-reveal mechanic solved the obvious problem: if guesses are plain text on-chain, anyone watching the mempool can read the answer before submitting their own. Each guess is committed as a keccak256 hash of the word combined with a per-session salt, then revealed in a separate transaction.
+
+## What I built
+
+Five people on the team. I owned the contract architecture, the frontend hooks (`useWordleContract`, `useWordleEvents`, `useRiseWebSocket`), wallet integration via porto (embedded wallet), and the deploy and sync scripts.
+
+The contract handles both single-player and 1v1 modes, commit-reveal for each guess, stake management (deposit, bonus payout on win, slash on loss), and the game state machine. The frontend hooks abstract all of that into a clean interface the UI components consume without touching contract details directly.
+
+## How it works
+
+On game start the player stakes ETH and the contract records them as active. Each guess goes through two transactions: commit (keccak256 hash of word + salt) and reveal (plaintext word + salt). The contract hashes the reveal and checks it matches the commit, then evaluates the guess against the target word and returns per-letter feedback (correct, present, absent).
+
+In 1v1 mode both players are working toward the same hidden word. Each player can see the other's grid (letter positions and colors) but not the actual letters guessed, so positional information leaks but the specific guesses do not. The WebSocket subscription keeps both grids in sync without polling.
+
+On win: stake returned plus 50% bonus from the contract's prize pool. On loss (all guesses exhausted): stake is forfeited.
+
+## Outcome
+
+RISE Chain track, 1st place, $1,500.
+
+Single-player and 1v1 modes both worked end-to-end in the demo. The leaderboard shipped with mock data because live user data was not available before the submission deadline.
+
+The RISE Chain-specific features did real work here, not cosmetic integration. Synchronous receipts kept the guess-to-feedback loop under a second. The WebSocket subscription made the 1v1 grid sync feel native.
+
+## Reflections
+
+Hackathon time pressure shows in the leaderboard. It was the right call to cut it rather than ship broken live data, but it left the most visible social feature looking unfinished. Scoping to a working core and labeling the gaps is better than hiding them, but the gap should have been caught earlier in planning.
+
+The commit-reveal pattern also adds UX friction that is easy to underestimate. Two transactions per guess instead of one doubles the interaction cost. On a chain with fast receipts this is manageable, but on a slower chain it would kill the game feel entirely. The choice of RISE Chain was not arbitrary.

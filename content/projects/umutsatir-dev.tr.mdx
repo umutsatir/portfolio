@@ -1,0 +1,57 @@
+---
+slug: umutsatir-dev
+title: umutsatir.dev
+oneLiner: d3-force node graph, terminal ve EN/TR i18n içeren kişisel portfolyo sitesi; sunduğu işin dağıtık sistemler ve blockchain temasını yansıtacak şekilde tasarlandı.
+date: 2026-06
+status: wip
+category: oss
+stack:
+  - Next.js 15
+  - TypeScript
+  - Tailwind CSS v4
+  - d3-force
+  - Framer Motion
+  - next-intl
+  - MDX
+role: Solo
+links:
+  github: https://github.com/umutsatir/umutsatir-dev
+  demo: https://umutsatir.dev
+featured: false
+---
+
+## Context
+
+Geliştirici portfolyolarının çoğu bir şablon seçip dolduruyor. Sonuç her portfolyo gibi görünüyor: el sallayan emoji ile hero, yüzde barlarından oluşan beceri gridi, üç özdeş kartlı projeler bölümü. Şu anda okuduğun site buna farklı bir yaklaşım denemesi.
+
+Koyduğum kısıt şuydu: tasarımın sunduğu çalışmaya göre bir anlam taşıması gerekiyordu. Projeler dağıtık sistemler ve p2p protokollerle ilgiliyse, site bir broşür gibi değil ağdaki bir düğüm gibi hissettirmeli.
+
+## Ne yaptım
+
+Solo, her satır benim.
+
+Ana parça, ana sayfadaki d3-force ve özel SVG renderer ile oluşturulmuş interaktif node graph. Her düğüm birlikte çalıştığım bir proje, işveren veya ekosistemi temsil ediyor. Simülasyon force-directed layout, birkaç saniyede bir idle pertürbasyonu ve bağlı kenarları vurgulayan hover state'leri ile çalışıyor. Proje düğümüne tıklamak proje sayfasına yönlendiriyor. Mobilde graph statik düzene donuyor.
+
+Graph'ın altında küçük bir komut setini kabul eden işlevsel bir terminal var (`whoami`, `ls projects/`, `cat about.md`, `uptime` ve birkaç easter egg). Komut geçmişi, tab otomatik tamamlama ve ekran okuyucu çıktısı için `aria-live` bölgesi mevcut.
+
+Site, cookie tabanlı locale kalıcılığı olan next-intl aracılığıyla EN/TR iki dilli. Proje içeriği frontmatter tabanlı metadata ile MDX. OG görselleri `next/og` üzerinden her proje için dinamik olarak üretiliyor.
+
+## Nasıl çalışıyor
+
+Node graph simülasyonu, cleanup fonksiyonlu bir `useEffect` içinde çalışıyor. Düğümler SVG `<circle>` elemanları, bağlantılar `<line>` elemanları, etiketler `<text>` elemanları. Her şey tek bir SVG viewport'ta render ediliyor. Simülasyon alpha 0.001'in altına düştükten sonra duruyor (yaklaşık 4 saniyelik boşta kalma), ardından yalnızca mouse event'lerine tepki veriyor.
+
+`prefers-reduced-motion` graph'ı bir tick'ten sonra dondurup idle pertürbasyonu devre dışı bırakıyor. Klavye navigasyonu düğümler arasında Tab ile geziniyor ve Enter'da etkinleştiriyor.
+
+Proje sayfaları tutarlı frontmatter şemasına (slug, title, stack, date, status, category, links) sahip MDX dosyalarından üretiliyor. `lib/projects.ts` build zamanında bunları okuyup sıralıyor. `[slug]` route'u, prose, kod blokları (shiki, github-dark teması) ve metadata için özel bileşenlerle MDX'i render ediyor.
+
+Hero'daki GitHub son commit gösterimi, 30 dakikalık revalidation penceresiyle server-side public events API'den çekiyor ve fetch başarısız olursa gizlenerek graceful degradation sağlıyor.
+
+## Sonuç
+
+Bu site. Aktif geliştirme devam ediyor.
+
+## Düşünceler
+
+Node graph'ı doğru yapmak en zorlu kısımdı. d3-force ve React, DOM'u kimin yöneteceği konusunda farklı fikirlere sahip: d3 onu doğrudan mutate etmek istiyor, React tamamen sahiplenmek istiyor. Çözüm, d3'ü yalnızca simülasyon matematiğinden (pozisyon verisi) sorumlu tutmak ve React'in her animasyon frame'inde bu veriden render etmesine izin vermekti. Bu, dikkatli bir `useRef` / `useState` ayrımı gerektirdi ve beklenenden fazla zaman aldı.
+
+EN/TR bölümü az takdir edilen bir maliyeti ortaya çıkarıyor: her metin kopyası iki kez var. Site geliştikçe bunları senkronize tutmak gerçek bir bakım yükü. Çeviri iş akışı olmayan solo bir proje için dürüst cevap, TR versiyonunun sürükleneceği. i18n'e bağlanmadan önce bunu bilmek gerekiyor.

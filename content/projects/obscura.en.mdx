@@ -1,0 +1,65 @@
+---
+slug: obscura-monad-blitz-istanbul
+title: Obscura
+oneLiner: Two front-running-resistant dApps (on-chain voting and sealed-bid auction) built on commit-reveal, deployed on Monad Testnet to stress-test the reveal-phase TX spike.
+date: 2026-02
+status: shipped
+category: hackathon
+stack:
+  - Solidity 0.8.19
+  - Hardhat
+  - React 19
+  - TypeScript
+  - Vite
+  - wagmi v2
+  - viem
+  - RainbowKit
+  - Tailwind CSS
+  - Monad Testnet
+role: Contract + frontend (50/50 split with one other)
+team: 2
+event: Monad Blitz Istanbul
+links:
+  github: https://github.com/GTU-Blockchain/obscura-monad-blitz-istanbul
+  demo: https://obscura-psi.vercel.app/
+  twitter: https://x.com/umut_satir/status/2027762235557171596
+featured: false
+---
+
+## Context
+
+Monad Blitz Istanbul, 6-hour format. The constraint shapes the project: you are not building a product, you are building a demonstration of understanding.
+
+Commit-reveal is a foundational pattern in on-chain systems. Voting and auctions are the two canonical use cases where it actually matters: if participants can see each other's choices before the reveal phase, the result is gameable. The commit phase locks each participant's choice as a keccak256 hash; only after the commit deadline does everyone reveal simultaneously.
+
+Monad was the technically motivated chain choice. The reveal phase creates a burst of transactions as everyone submits their opens at roughly the same time. On Ethereum mainnet that burst creates congestion and gas spikes. Monad's 500ms block time and parallel EVM execution absorbs the spike without a bottleneck, which made it a natural fit for demonstrating reveal-phase load behavior.
+
+## What I built
+
+Two people, everything split roughly in half: both contracts, tests, and the frontend. I cannot reconstruct a clean line between my half and my partner's half at this distance, so I will not pretend one exists.
+
+The deliverable was two contracts and a factory pattern: `CommitRevealVoting` and `SealedBidAuction`, both deployable via a shared factory. Plus a React frontend covering both flows.
+
+## How it works
+
+Both contracts follow the same two-phase structure.
+
+**Commit phase:** participants submit `keccak256(abi.encodePacked(choice, secret, msg.sender))`. The `msg.sender` is included in the hash to prevent replay attacks: a committed hash from one address cannot be reused by another. The contract stores the hash against the sender's address.
+
+**Reveal phase:** after the commit deadline, participants submit their plaintext choice and secret. The contract recomputes the hash and checks it matches the stored commitment. Only matching reveals are counted.
+
+For the auction, bids below the current highest valid reveal are rejected. For the vote, tallies are incremented per valid reveal.
+
+The factory pattern lets a single deployed factory spin up new instances of either contract with configured deadlines, avoiding redeployment for each new vote or auction.
+
+## Outcome
+
+No prize. Both contracts and the factory shipped and worked within the 6-hour window. The demo ran on Monad Testnet.
+
+## Reflections
+
+The localStorage problem was the most useful thing I took from this project. The secret that allows a user to reveal their commit lives in the browser. If the user clears their browser data between commit and reveal, they cannot open their commitment and their stake or vote is locked permanently. This is not a contract bug: it is a fundamental UX/security tension in commit-reveal systems.
+
+The clean fix is server-side secret storage, but that reintroduces a trusted party which defeats much of the point. The honest answer is that commit-reveal has a UX ceiling that is hard to push past without making architectural concessions. Knowing that ceiling exists is worth knowing.
+
+The `msg.sender` inclusion in the hash was a late addition after noticing the replay vector. In a longer project that would have been caught in a threat model review before writing code. In a 6-hour sprint it was caught during implementation, which is fine but not ideal.

@@ -1,0 +1,65 @@
+---
+slug: obscura-monad-blitz-istanbul
+title: Obscura
+oneLiner: Commit-reveal ile front-running'e dayanıklı iki dApp (zincir-üstü oylama ve sealed-bid açık artırma), reveal fazı TX spike'ını test etmek için Monad Testnet'e deploy edildi.
+date: 2026-02
+status: shipped
+category: hackathon
+stack:
+  - Solidity 0.8.19
+  - Hardhat
+  - React 19
+  - TypeScript
+  - Vite
+  - wagmi v2
+  - viem
+  - RainbowKit
+  - Tailwind CSS
+  - Monad Testnet
+role: Contract + frontend (%50/%50 ortak ile)
+team: 2
+event: Monad Blitz Istanbul
+links:
+  github: https://github.com/GTU-Blockchain/obscura-monad-blitz-istanbul
+  demo: https://obscura-psi.vercel.app/
+  twitter: https://x.com/umut_satir/status/2027762235557171596
+featured: false
+---
+
+## Context
+
+Monad Blitz Istanbul, 6 saatlik format. Kısıt projeyi şekillendiriyor: bir ürün değil, anlayışın bir gösterimini yapıyorsun.
+
+Commit-reveal, zincir-üstü sistemlerde temel bir pattern. Oylama ve açık artırma, gerçekten önem taşıdığı iki kanonik kullanım senaryosu: katılımcılar reveal fazından önce birbirlerinin seçimlerini görebilirse sonuç manipüle edilebilir. Commit fazı, her katılımcının seçimini keccak256 hash olarak kilitliyor; commit son tarihinden sonra herkes aynı anda açıklıyor.
+
+Monad teknik gerekçeli chain seçimiydi. Reveal fazı, herkes açıklamalarını yaklaşık aynı anda gönderdiğinde bir transaction patlaması yaratıyor. Ethereum mainnet'te bu patlama tıkanıklık ve gas spike'ı oluşturuyor. Monad'ın 500ms blok süresi ve paralel EVM execution, spike'ı darboğaz olmadan absorbe ediyor; bu da reveal fazı yük davranışını göstermek için doğal bir uyum sağlıyordu.
+
+## Ne yaptım
+
+İki kişi, her şey kabaca yarı yarıya bölündü: her iki contract, testler ve frontend. Bu mesafeden partnerim ile benimkinin arasında temiz bir çizgi çizemem, dolayısıyla öyle yapmayacağım.
+
+Teslimat iki contract ve bir factory pattern'di: `CommitRevealVoting` ve `SealedBidAuction`, ikisi de paylaşılan bir factory aracılığıyla deploy edilebilir. Artı her iki akışı kapsayan React frontend.
+
+## Nasıl çalışıyor
+
+Her iki contract da aynı iki fazlı yapıyı izliyor.
+
+**Commit fazı:** katılımcılar `keccak256(abi.encodePacked(tercih, secret, msg.sender))` gönderiyor. Replay saldırılarını önlemek için `msg.sender` hash'e dahil ediliyor: bir adresten commit edilmiş hash başka bir adres tarafından yeniden kullanılamıyor. Contract, hash'i göndericinin adresi karşısında saklıyor.
+
+**Reveal fazı:** commit son tarihinden sonra katılımcılar düz metin tercihlerini ve secret'larını gönderiyor. Contract hash'i yeniden hesaplıyor ve saklanan commitment ile eşleşip eşleşmediğini kontrol ediyor. Yalnızca eşleşen reveal'lar sayılıyor.
+
+Açık artırmada, mevcut en yüksek geçerli reveal'ın altındaki teklifler reddediliyor. Oylamada, geçerli her reveal için sayım artırılıyor.
+
+Factory pattern, tek bir deploy edilmiş factory'nin yapılandırılmış son tarihlerle her iki contract'tan yeni instance'lar oluşturmasına izin veriyor; her yeni oylama veya açık artırma için yeniden deploy gerekmiyor.
+
+## Sonuç
+
+Ödül yok. Her iki contract ve factory 6 saatlik pencerede teslim edildi ve çalıştı. Demo Monad Testnet üzerinde çalıştı.
+
+## Düşünceler
+
+localStorage problemi bu projeden çıkardığım en yararlı şeydi. Kullanıcının commit'ini açmasını sağlayan secret tarayıcıda yaşıyor. Kullanıcı commit ile reveal arasında tarayıcı verilerini temizlerse commitment'ını açamıyor ve stake'i veya oyu kalıcı olarak kilitli kalıyor. Bu bir contract hatası değil: commit-reveal sistemlerinde temel bir UX/güvenlik gerilimi.
+
+Temiz çözüm sunucu tarafı secret depolama, ama bu güvenilir bir tarafı yeniden dahil ediyor ve bu da büyük ölçüde amacı bozuyor. Dürüst cevap şu: commit-reveal'ın mimari tavizler vermeden geçmesi zor bir UX tavanı var. Bu tavanın varlığını bilmek değerli.
+
+Hash'e `msg.sender` eklenmesi, replay vektörünü fark ettikten sonra geç bir ekleme oldu. Daha uzun bir projede bu, kod yazmadan önce bir tehdit modeli incelemesinde yakalanırdı. 6 saatlik bir sprint'te uygulama sırasında yakalandı, bu kabul edilebilir ama ideal değil.

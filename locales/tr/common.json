@@ -29,7 +29,39 @@
   "about": {
     "title": "Hakkımda",
     "timeline": "Zaman Çizelgesi",
-    "stack": "Teknoloji Yığını"
+    "stack": "Teknoloji Yığını",
+    "bio1": "Gebze Teknik Üniversitesi'nde son sınıf Bilgisayar Mühendisliği öğrencisi ve node101'de yazılım mühendisiyim; sıfır bilgi ve blockchain tabanlı ürünler geliştiriyorum. Çalışmalar altyapı katmanına yakın duruyor: doğrulama akışları, gizliliği koruyan uygulama mantığı ve saldırı altında ayakta kalması gereken sistemler.",
+    "bio2": "node101 öncesinde XON'da bir yılı aşkın süre PHP backend işleri yaptım: kurumsal projeler için veritabanı tasarımı, API mimarisi ve büyük ölçekli sistem tasarımı. Güvenilir altyapı kurma konusundaki bu deneyim, şu an yaptığım zincir üstü işe doğrudan yansıdı. 2022'den bu yana Ethereum ekosisteminde geliştirme yapıyorum; İstanbul, Prag, Roma ve Cannes'daki ETHGlobal hackathonlarıyla kendimi geliştirdim, İstanbul'da birinciliği de kaptım.",
+    "bio3": "İş dışında GTU Blockchain'i ekibimizle birlikte kurduk. Aktif olarak yazılım komitesini yönetiyorum. Sıfırdan bir öğrenci mühendis ekibi inşa etmek ve araştırma düzeyindeki fikirlerle çalışan kod arasındaki boşluğu kapatmak demek bu. Karmaşık sistemleri başkalarına açıklamak, ne anladığını gerçekten öğrenmenin en hızlı yollarından biri çıktı.",
+    "bio4": "Eylül 2027 dönemine dağıtık sistemler alanında yüksek lisans yapmayı hedefliyorum; ilk tercihim Politecnico di Milano, gerçekçi alternatifim ise Politecnico di Torino. Amaç, zaten üzerine çalıştığım sistemlerin (konsensüs algoritmaları, hata toleransı, kriptografik protokoller) arkasındaki formal teoriye daha derinlemesine inmek ve uzun vadede protokol katmanında çalışabilecek konumda çıkmak.",
+    "stackCurrentlyUsing": "aktif olarak kullandıklarım",
+    "stackComfortableWith": "rahat kullandıklarım",
+    "stackExploring": "keşfettiklerim",
+    "events": {
+      "bscTitle": "BSc Bilgisayar Mühendisliği · Gebze Teknik Üniversitesi",
+      "ethereumTitle": "Ethereum'da geliştirmeye başladım",
+      "ethereumDesc": "İlk dApp'ler, ilk akıllı sözleşmeler. Ethereum ekosistemini kendi kendime projeler aracılığıyla keşfetmeye başladım.",
+      "gtuTitle": "Yazılım Komitesi Lideri · GTU Blockchain",
+      "gtuDesc": "GTU Blockchain'i ekibimizle birlikte sıfırdan kurduk. Yazılım komitesini yönetiyor, yönetim kurulunda görev yapıyorum.",
+      "istanbulTitle": "ETHGlobal İstanbul · Cryptle · 1. lik",
+      "istanbulDesc": "ETHGlobal İstanbul'da Cryptle ile birincilik kazandım.",
+      "ituTitle": "Geliştirici · ITU Blockchain",
+      "ituDesc": "İstanbul Teknik Üniversitesi Blockchain Topluluğu'na full-stack geliştirici olarak katıldım.",
+      "xonTitle": "Yazılım Geliştirici · XON",
+      "xonDesc": "XON'da PHP backend geliştirme: kurumsal web projeleri için veritabanı tasarımı, API mimarisi ve büyük ölçekli sistem tasarımı. Birden fazla prodüksiyon sisteminde mimari kararlar aldım.",
+      "ituLeftTitle": "ITU Blockchain'den ayrıldım",
+      "pragueTitle": "ETHGlobal Prague · ChronoTrade",
+      "pragueDesc": "ETHGlobal Prague'da ChronoTrade'i geliştirdim.",
+      "node101Title": "Yazılım Mühendisi · node101",
+      "node101Desc": "Web3 ve ZK tabanlı ürünler üzerine çalışmak için node101'e katıldım. Bir yıl iki aylık tam zamanlı çalışmanın ardından XON'dan ayrıldım.",
+      "romeTitle": "ETHRome · BitBrawlers",
+      "romeDesc": "ETHRome'da BitBrawlers'ı geliştirdim.",
+      "cannesTitle": "ETHGlobal Cannes · Roam-Swarm",
+      "cannesDesc": "ETHGlobal Cannes'da Roam-Swarm'ı geliştirdim; zincir üstü konum açılışları ve yapay zeka tarafından oluşturulan yer anlatılarıyla bir konum tabanlı keşif protokolü.",
+      "bscGradTitle": "Beklenen BSc mezuniyeti · GTU",
+      "mscTitle": "Hedef: Yüksek Lisans · İtalya",
+      "mscDesc": "Dağıtık sistemler yüksek lisans programı için Politecnico di Milano (ilk tercih) ve Politecnico di Torino'ya başvuruyorum."
+    }
   },
   "projects": {
     "title": "Projeler",
@@ -53,7 +85,8 @@
     "githubLabel": "github",
     "telegramLabel": "telegram",
     "twitterLabel": "twitter",
-    "closing": "İş için e-posta ve telegram en hızlı yollar. 24 saat içinde yanıt veririm."
+    "closing": "İş için e-posta ve telegram en hızlı yollar. 24 saat içinde yanıt veririm.",
+    "meetingTitle": "Toplantı planla"
   },
   "footer": {
     "builtWith": "Next.js ile yapıldı. Kaynak GitHub'da.",

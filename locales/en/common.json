@@ -29,7 +29,39 @@
   "about": {
     "title": "About",
     "timeline": "Timeline",
-    "stack": "Stack"
+    "stack": "Stack",
+    "bio1": "I'm a final-year Computer Engineering student at Gebze Technical University and a software engineer at node101, building zero-knowledge and blockchain-based products. The work sits close to the infrastructure layer: verification flows, privacy-preserving application logic, and systems that need to hold up under adversarial conditions.",
+    "bio2": "Before node101, I spent over a year at XON doing PHP backend work: database design, API architecture, and large-scale system design for corporate projects. That experience building reliable infrastructure carried directly into the on-chain work I do now. I've been building in the Ethereum ecosystem since 2022, sharpening through ETHGlobal hackathons in Istanbul, Prague, Rome, and Cannes, picking up a first place in Istanbul along the way.",
+    "bio3": "Outside of work, I co-founded GTU Blockchain and lead its software committee. It means building a student engineering team from scratch and closing the gap between research-level ideas and working code. Explaining complex systems to others turns out to be one of the fastest ways to find out what you actually understand.",
+    "bio4": "I'm targeting an MSc in distributed systems for the September 2027 intake, with Politecnico di Milano as my top choice and Politecnico di Torino as a realistic alternative. The goal is to go deeper on the formal theory behind the systems I already build (consensus algorithms, fault tolerance, cryptographic protocols) and come out positioned to work at the protocol layer for the long term.",
+    "stackCurrentlyUsing": "currently using",
+    "stackComfortableWith": "comfortable with",
+    "stackExploring": "exploring",
+    "events": {
+      "bscTitle": "BSc Computer Engineering · Gebze Technical University",
+      "ethereumTitle": "Started building on Ethereum",
+      "ethereumDesc": "First dApps, first smart contracts. Began exploring the Ethereum ecosystem through self-directed projects.",
+      "gtuTitle": "Software Committee Leader · GTU Blockchain",
+      "gtuDesc": "Co-founded GTU Blockchain with a team, built it from scratch. Leading the software committee and serving on the board.",
+      "istanbulTitle": "ETHGlobal Istanbul · Cryptle · 1st place",
+      "istanbulDesc": "Won first place at ETHGlobal Istanbul with Cryptle.",
+      "ituTitle": "Developer · ITU Blockchain",
+      "ituDesc": "Joined Istanbul Technical University Blockchain Society as a full-stack developer.",
+      "xonTitle": "Software Developer · XON",
+      "xonDesc": "PHP backend development at XON: database design, API architecture, and large-scale system design for corporate web projects. Played an active role in architectural decisions across multiple production systems.",
+      "ituLeftTitle": "Left ITU Blockchain",
+      "pragueTitle": "ETHGlobal Prague · ChronoTrade",
+      "pragueDesc": "Built ChronoTrade at ETHGlobal Prague.",
+      "node101Title": "Software Engineer · node101",
+      "node101Desc": "Joined node101 to work on Web3 and ZK-based products. Left XON after a year and two months of full-time work.",
+      "romeTitle": "ETHRome · BitBrawlers",
+      "romeDesc": "Built BitBrawlers at ETHRome.",
+      "cannesTitle": "ETHGlobal Cannes · Roam-Swarm",
+      "cannesDesc": "Built Roam-Swarm at ETHGlobal Cannes, a location-based discovery protocol with on-chain unlocks and AI-generated place narratives.",
+      "bscGradTitle": "Expected BSc graduation · GTU",
+      "mscTitle": "Targeting MSc intake · Italy",
+      "mscDesc": "Applying to Politecnico di Milano (top choice) and Politecnico di Torino for distributed systems MSc programs."
+    }
   },
   "projects": {
     "title": "Projects",
@@ -53,7 +85,8 @@
     "githubLabel": "github",
     "telegramLabel": "telegram",
     "twitterLabel": "twitter",
-    "closing": "For work, Telegram and email are fastest. I respond within 24 hours."
+    "closing": "For work, Telegram and email are fastest. I respond within 24 hours.",
+    "meetingTitle": "Schedule a meeting"
   },
   "footer": {
     "builtWith": "Built with Next.js. Source on GitHub.",

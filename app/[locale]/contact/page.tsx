@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
+import CalEmbed from "@/components/cal-embed";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -88,6 +89,19 @@ export default async function ContactPage() {
             >
               {t("closing")}
             </p>
+          </div>
+
+          <div
+            className="border-t pt-8 mt-8"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            <p
+              className="text-body mb-6"
+              style={{ color: "var(--color-text-dim)" }}
+            >
+              {t("meetingTitle")}
+            </p>
+            <CalEmbed />
           </div>
         </div>
       </main>

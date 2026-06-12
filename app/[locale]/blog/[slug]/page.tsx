@@ -1,45 +1,32 @@
 import { notFound } from "next/navigation";
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import Link from "next/link";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import { MDXRemote } from "@/components/mdx-remote";
-
-interface WritingMeta {
-  title: string;
-  date: string;
-  summary: string;
-  tags: string[];
-  lang: string;
-}
+import { getPostContent, getAllPostSlugs } from "@/lib/writing";
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-async function getPost(slug: string, locale: string) {
-  const contentDir = path.join(process.cwd(), "content/writing");
-  const filePath = path.join(contentDir, `${slug}.${locale}.mdx`);
-  const fallback = path.join(contentDir, `${slug}.en.mdx`);
-
-  let fileContent: string | null = null;
-  if (fs.existsSync(filePath)) {
-    fileContent = fs.readFileSync(filePath, "utf-8");
-  } else if (fs.existsSync(fallback)) {
-    fileContent = fs.readFileSync(fallback, "utf-8");
-  }
-
-  if (!fileContent) return null;
-
-  const { data, content } = matter(fileContent);
-  return { meta: data as WritingMeta, content };
+export async function generateStaticParams() {
+  const slugs = getAllPostSlugs();
+  const locales = ["en", "tr"];
+  return locales.flatMap((locale) =>
+    slugs.map((slug) => ({ locale, slug }))
+  );
 }
 
-export default async function WritingPostPage({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps) {
   const { locale, slug } = await params;
-  const post = await getPost(slug, locale);
+  const post = await getPostContent(slug, locale);
+  if (!post) return {};
+  return { title: post.meta.title };
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
+  const { locale, slug } = await params;
+  const post = await getPostContent(slug, locale);
 
   if (!post) notFound();
 
@@ -49,11 +36,11 @@ export default async function WritingPostPage({ params }: PageProps) {
       <main id="main-content" className="flex-1">
         <div className="max-w-[1280px] mx-auto px-8 md:px-16 pt-24 md:pt-32 pb-24">
           <Link
-            href={`/${locale}/writing`}
-            className="text-small block mb-12 transition-colors"
+            href={`/${locale}/blog`}
+            className="text-small block mb-12 transition-opacity hover:opacity-70"
             style={{ color: "var(--color-text-dim)" }}
           >
-            ← back to writing
+            ← {locale === "tr" ? "bloga dön" : "back to blog"}
           </Link>
 
           <div className="mb-8">
@@ -76,6 +63,19 @@ export default async function WritingPostPage({ params }: PageProps) {
               >
                 {post.meta.summary}
               </p>
+            )}
+            {post.meta.tags?.length > 0 && (
+              <div className="flex gap-2 mt-3 flex-wrap">
+                {post.meta.tags.map((tag: string) => (
+                  <span
+                    key={tag}
+                    className="text-mono"
+                    style={{ color: "var(--color-text-faint)", fontSize: "0.7rem" }}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
 

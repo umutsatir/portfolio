@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
-import Timeline from "@/components/timeline";
+import Timeline, { type TimelineEvent } from "@/components/timeline";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -12,32 +12,39 @@ export async function generateMetadata({ params }: PageProps) {
   return { title: t("title") };
 }
 
-const stackGroups = [
-  {
-    label: "currently using",
-    items: [
-      "TypeScript",
-      "React",
-      "Next.js",
-      "Solidity",
-      "ethers.js",
-      "MongoDB",
-      "Node.js",
-    ],
-  },
-  {
-    label: "comfortable with",
-    items: ["Python", "PostgreSQL", "Docker", "AWS", "Ubuntu admin", "Linux networking"],
-  },
-  {
-    label: "exploring",
-    items: ["Rust", "distributed systems", "zk-proofs", "Move"],
-  },
-];
-
 export default async function AboutPage({ params }: PageProps) {
-  const { locale } = await params;
   const t = await getTranslations("about");
+
+  const stackGroups = [
+    {
+      label: t("stackCurrentlyUsing"),
+      items: ["TypeScript", "React", "Next.js", "MongoDB", "MySQL", "PHP", "Solidity", "Node.js"],
+    },
+    {
+      label: t("stackComfortableWith"),
+      items: ["Python", "PostgreSQL", "Docker", "AWS", "Linux"],
+    },
+    {
+      label: t("stackExploring"),
+      items: ["Rust", "distributed systems", "zk-proofs", "Move"],
+    },
+  ];
+
+  const events: TimelineEvent[] = [
+    { date: "2021.09", title: t("events.bscTitle") },
+    { date: "2022.03", title: t("events.ethereumTitle"), description: t("events.ethereumDesc") },
+    { date: "2022.09", title: t("events.gtuTitle"), description: t("events.gtuDesc") },
+    { date: "2023.11", title: t("events.istanbulTitle"), description: t("events.istanbulDesc") },
+    { date: "2024.01", title: t("events.ituTitle"), description: t("events.ituDesc") },
+    { date: "2024.08", title: t("events.xonTitle"), description: t("events.xonDesc") },
+    { date: "2025.01", title: t("events.ituLeftTitle") },
+    { date: "2025.05", title: t("events.pragueTitle"), description: t("events.pragueDesc") },
+    { date: "2025.09", title: t("events.node101Title"), description: t("events.node101Desc") },
+    { date: "2025.10", title: t("events.romeTitle"), description: t("events.romeDesc") },
+    { date: "2026.04", title: t("events.cannesTitle"), description: t("events.cannesDesc") },
+    { date: "2027.02", title: t("events.bscGradTitle") },
+    { date: "2027.Q4", title: t("events.mscTitle"), description: t("events.mscDesc") },
+  ];
 
   return (
     <>
@@ -51,40 +58,18 @@ export default async function AboutPage({ params }: PageProps) {
             {t("title")}
           </h1>
 
-          {/* Now (extended) */}
           <section className="mb-16">
             <div
               className="max-w-[680px] flex flex-col gap-5 text-body"
               style={{ color: "var(--color-text-dim)", lineHeight: 1.7 }}
             >
-              <p>
-                I&apos;m a final-year computer science student at Gebze Technical
-                University and a software engineer at node101, where I work on
-                blockchain infrastructure and distributed systems. My current focus is
-                building production-grade on-chain protocols — things that actually run
-                in adversarial environments, not toy demos.
-              </p>
-              <p>
-                I&apos;ve been building in the Ethereum ecosystem since 2022 — through
-                university club work, ETHGlobal hackathons, and eventually full-time at
-                node101. I&apos;m drawn to the intersection of distributed systems theory
-                and practical protocol design: consensus mechanisms, p2p networking,
-                economic incentive structures. These aren&apos;t just interesting
-                abstractions to me — they&apos;re the foundation of systems I want to
-                spend the next decade building on.
-              </p>
-              <p>
-                I&apos;m targeting an MSc in distributed systems for the September 2027
-                intake, with Politecnico di Milano as my top choice and Politecnico di
-                Torino as a realistic alternative. The goal is to go deeper on the
-                theory that underpins the systems I already work on — formal verification,
-                fault tolerance, consensus algorithms — and come out the other side
-                positioned to build or research at the protocol layer.
-              </p>
+              <p>{t("bio1")}</p>
+              <p>{t("bio2")}</p>
+              <p>{t("bio3")}</p>
+              <p>{t("bio4")}</p>
             </div>
           </section>
 
-          {/* Timeline */}
           <section
             className="border-t pt-12 mb-16"
             style={{ borderColor: "var(--color-border)" }}
@@ -95,10 +80,9 @@ export default async function AboutPage({ params }: PageProps) {
             >
               {t("timeline")}
             </h2>
-            <Timeline />
+            <Timeline events={events} />
           </section>
 
-          {/* Stack */}
           <section
             className="border-t pt-12"
             style={{ borderColor: "var(--color-border)" }}

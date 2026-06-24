@@ -66,7 +66,7 @@ export default async function LocaleLayout({
       lang={locale}
       className={`${dmSans.variable} ${dmMono.variable}`}
     >
-      <body>
+      <body className="min-h-screen flex flex-col">
         <a href="#main-content" className="skip-to-content">
           Skip to content
         </a>

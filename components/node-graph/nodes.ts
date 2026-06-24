@@ -1,35 +1,91 @@
 import type { GraphNode, GraphLink } from "./types";
+import type { ProjectMeta } from "@/lib/projects";
 
-export const nodes: GraphNode[] = [
-  { id: "umut", label: "umut", kind: "center" },
+const centerNode: GraphNode = { id: "umut", label: "umut", kind: "center" };
 
+const workNodes: GraphNode[] = [
   { id: "node101", label: "node101", kind: "work", href: "https://node101.io", external: true },
   { id: "gtu-blockchain", label: "gtu-blockchain", kind: "work", href: "https://github.com/GTUBlockchain", external: true },
+];
 
-  { id: "roam-swarm", label: "roam-swarm", kind: "project", href: "/projects/roam-swarm" },
-  { id: "timeswap", label: "timeswap", kind: "project", href: "/projects/timeswap" },
-  { id: "minicrm", label: "minicrm", kind: "project", href: "/projects/minicrm" },
-  { id: "gossip-net", label: "gossip-net", kind: "project", href: "/projects/gossip-network" },
-  { id: "healthnode", label: "healthnode", kind: "project", href: "/projects/healthnode" },
-
+const ecosystemNodes: GraphNode[] = [
   { id: "ethereum", label: "ethereum", kind: "ecosystem" },
   { id: "world-id", label: "world-id", kind: "ecosystem" },
   { id: "ens", label: "ens", kind: "ecosystem" },
   { id: "sui", label: "sui", kind: "ecosystem" },
+  { id: "typescript", label: "typescript", kind: "ecosystem" },
+  { id: "react", label: "react", kind: "ecosystem" },
+  { id: "rust", label: "rust", kind: "ecosystem" },
+  { id: "python", label: "python", kind: "ecosystem" },
 ];
 
-export const links: GraphLink[] = [
+// Stack/tech keywords that map a project onto an ecosystem (tag) node.
+const ecosystemMatchers: { id: string; keywords: string[] }[] = [
+  { id: "ethereum", keywords: ["ethereum", "solidity", "evm", "foundry", "hardhat"] },
+  { id: "world-id", keywords: ["world id", "worldid", "world-id"] },
+  { id: "ens", keywords: ["ens"] },
+  { id: "sui", keywords: ["sui", "move"] },
+  { id: "typescript", keywords: ["typescript"] },
+  { id: "react", keywords: ["react", "next.js", "next "] },
+  { id: "rust", keywords: ["rust", "tauri"] },
+  { id: "python", keywords: ["python", "fastapi"] },
+];
+
+// Static links that don't depend on the project list.
+const workLinks: GraphLink[] = [
   { source: "umut", target: "node101" },
   { source: "umut", target: "gtu-blockchain" },
-  { source: "umut", target: "roam-swarm" },
-  { source: "umut", target: "timeswap" },
-  { source: "umut", target: "minicrm" },
-  { source: "umut", target: "gossip-net" },
-  { source: "umut", target: "healthnode" },
-  { source: "roam-swarm", target: "world-id" },
-  { source: "roam-swarm", target: "ens" },
-  { source: "roam-swarm", target: "ethereum" },
-  { source: "timeswap", target: "ethereum" },
-  { source: "gossip-net", target: "sui" },
   { source: "gtu-blockchain", target: "ethereum" },
 ];
+
+export function buildGraph(projects: ProjectMeta[]): {
+  nodes: GraphNode[];
+  links: GraphLink[];
+} {
+  const projectNodes: GraphNode[] = projects.map((p) => ({
+    id: p.slug,
+    label: p.slug,
+    kind: "project",
+    href: `/projects/${p.slug}`,
+  }));
+
+  // Projects tagged with an org hang under that org node; otherwise under umut.
+  const workIds = new Set(workNodes.map((w) => w.id));
+  const projectLinks: GraphLink[] = projects.map((p) => ({
+    source: p.org && workIds.has(p.org) ? p.org : "umut",
+    target: p.slug,
+  }));
+
+  const usedEcosystem = new Set<string>();
+  const ecosystemLinks: GraphLink[] = [];
+
+  for (const p of projects) {
+    const stack = (p.stack ?? []).map((s) => s.toLowerCase());
+    for (const matcher of ecosystemMatchers) {
+      const hit = stack.some((s) =>
+        matcher.keywords.some((k) => s.includes(k))
+      );
+      if (hit) {
+        usedEcosystem.add(matcher.id);
+        ecosystemLinks.push({ source: p.slug, target: matcher.id });
+      }
+    }
+  }
+
+  // gtu-blockchain links to ethereum via workLinks, so keep it visible.
+  usedEcosystem.add("ethereum");
+
+  const nodes: GraphNode[] = [
+    centerNode,
+    ...workNodes,
+    ...projectNodes,
+    ...ecosystemNodes.filter((e) => usedEcosystem.has(e.id)),
+  ];
+
+  const links: GraphLink[] = [...workLinks, ...projectLinks, ...ecosystemLinks];
+
+  return { nodes, links };
+}
+
+// Static fallback (no project data) so the client can render before/without props.
+export const { nodes, links } = buildGraph([]);

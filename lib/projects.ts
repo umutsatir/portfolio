@@ -14,6 +14,8 @@ export interface ProjectMeta {
   team?: number;
   event?: string;
   prize?: string;
+  /** Org/club this project belongs to — matches a work node id (e.g. "gtu-blockchain"). */
+  org?: string;
   links?: {
     github?: string;
     demo?: string;

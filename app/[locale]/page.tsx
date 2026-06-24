@@ -6,7 +6,8 @@ import NowBlock from "@/components/now-block";
 import ProjectCard from "@/components/project-card";
 import Footer from "@/components/footer";
 import TerminalWrapper from "@/components/terminal-wrapper";
-import { getFeaturedProjects } from "@/lib/projects";
+import { getFeaturedProjects, getAllProjectsMeta } from "@/lib/projects";
+import { buildGraph } from "@/components/node-graph/nodes";
 import { getLastCommit, formatRelativeTime } from "@/lib/github";
 
 interface PageProps {
@@ -24,11 +25,20 @@ export default async function HomePage({ params }: PageProps) {
 
   const relativeTime = lastCommit ? formatRelativeTime(lastCommit.when) : null;
 
+  const { nodes: graphNodes, links: graphLinks } = buildGraph(
+    getAllProjectsMeta(locale)
+  );
+
   return (
     <>
       <Nav />
       <main id="main-content" className="flex-1 flex flex-col">
-        <Hero lastCommit={lastCommit} relativeTime={relativeTime} />
+        <Hero
+          lastCommit={lastCommit}
+          relativeTime={relativeTime}
+          graphNodes={graphNodes}
+          graphLinks={graphLinks}
+        />
 
         <NowBlock />
 

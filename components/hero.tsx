@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import type { GraphNode, GraphLink } from "./node-graph/types";
 
 // Alt version (more confident):
 // title: "I build infrastructure for decentralized networks."
@@ -12,16 +13,23 @@ const NodeGraph = dynamic(() => import("./node-graph"), { ssr: false });
 interface HeroProps {
   lastCommit: { when: string; sha: string } | null;
   relativeTime: string | null;
+  graphNodes: GraphNode[];
+  graphLinks: GraphLink[];
 }
 
-export default function Hero({ lastCommit, relativeTime }: HeroProps) {
+export default function Hero({
+  lastCommit,
+  relativeTime,
+  graphNodes,
+  graphLinks,
+}: HeroProps) {
   const t = useTranslations("hero");
 
   return (
     <section className="max-w-[1280px] mx-auto px-8 md:px-16 pt-28 md:pt-32 pb-0">
       <div className="flex flex-col md:flex-row md:items-start gap-8 md:gap-12">
-        {/* Left: text 60% */}
-        <div className="flex-1 md:max-w-[60%]">
+        {/* Left: text 55% */}
+        <div className="flex-1 md:max-w-[55%]">
           <h1 className="text-display" style={{ color: "var(--color-text)" }}>
             {t("title")}
           </h1>
@@ -58,9 +66,9 @@ export default function Hero({ lastCommit, relativeTime }: HeroProps) {
           </div>
         </div>
 
-        {/* Right: node graph 40% */}
-        <div className="w-full md:w-[40%] md:max-w-[360px] aspect-square">
-          <NodeGraph />
+        {/* Right: node graph 45% */}
+        <div className="w-full md:w-[45%] md:max-w-[480px] aspect-square">
+          <NodeGraph nodes={graphNodes} links={graphLinks} />
         </div>
       </div>
     </section>

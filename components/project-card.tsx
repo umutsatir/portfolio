@@ -44,10 +44,10 @@ export default function ProjectCard({ project, compact = false }: ProjectCardPro
         (e.currentTarget as HTMLElement).style.borderColor = "var(--color-border)";
       }}
     >
-      <div className={`flex gap-0 ${compact ? "p-5" : "p-6 md:p-8"}`}>
+      <div className={`flex flex-col md:flex-row gap-3 md:gap-0 ${compact ? "p-5" : "p-6 md:p-8"}`}>
         {/* Metadata column */}
         <div
-          className={`shrink-0 flex flex-col gap-1 ${compact ? "w-28 mr-5" : "w-36 mr-8"}`}
+          className={`shrink-0 flex flex-row flex-wrap md:flex-col gap-x-4 gap-y-1 md:gap-1 ${compact ? "md:w-28 md:mr-5" : "md:w-36 md:mr-8"}`}
           style={{ color: "var(--color-text-dim)" }}
         >
           <span className="text-mono">
@@ -59,7 +59,7 @@ export default function ProjectCard({ project, compact = false }: ProjectCardPro
             </span>
           )}
           {project.stack && project.stack.length > 0 && (
-            <span className="text-mono mt-1" style={{ color: "var(--color-text-faint)", fontSize: "0.75rem" }}>
+            <span className="text-mono md:mt-1" style={{ color: "var(--color-text-faint)", fontSize: "0.75rem" }}>
               {project.stack.slice(0, 3).join(" · ")}
             </span>
           )}
@@ -69,7 +69,7 @@ export default function ProjectCard({ project, compact = false }: ProjectCardPro
             </span>
           )}
           {project.prize && (
-            <span className="text-mono mt-1" style={{ color: "var(--color-warn)", fontSize: "0.75rem" }}>
+            <span className="text-mono md:mt-1" style={{ color: "var(--color-warn)", fontSize: "0.75rem" }}>
               {project.prize}
             </span>
           )}

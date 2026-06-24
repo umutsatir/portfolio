@@ -3,9 +3,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
-import { nodes as initialNodes, links as initialLinks } from "./nodes";
+import { nodes as fallbackNodes, links as fallbackLinks } from "./nodes";
 import { createSimulation, pinCenter } from "./simulation";
 import type { GraphNode, GraphLink } from "./types";
+
+interface NodeGraphProps {
+  nodes?: GraphNode[];
+  links?: GraphLink[];
+}
 
 const WIDTH = 600;
 const HEIGHT = 600;
@@ -21,7 +26,9 @@ function getNodeId(n: string | GraphNode): string {
   return typeof n === "string" ? n : n.id;
 }
 
-export default function NodeGraph() {
+export default function NodeGraph({ nodes, links }: NodeGraphProps = {}) {
+  const initialNodes = nodes ?? fallbackNodes;
+  const initialLinks = links ?? fallbackLinks;
   const router = useRouter();
   const locale = useLocale();
   const svgRef = useRef<SVGSVGElement>(null);
@@ -52,7 +59,7 @@ export default function NodeGraph() {
       });
       return connected;
     },
-    []
+    [initialLinks]
   );
 
   const getConnectedLinkIds = useCallback(
@@ -67,12 +74,21 @@ export default function NodeGraph() {
       });
       return connected;
     },
-    []
+    [initialLinks]
   );
 
   useEffect(() => {
     const nodesCopy: GraphNode[] = initialNodes.map((n) => ({ ...n }));
     const linksCopy: GraphLink[] = initialLinks.map((l) => ({ ...l }));
+
+    // Seed non-center nodes evenly around the center so the settled layout is
+    // symmetric and stays centered (avoids one-sided clustering / empty gaps).
+    const outer = nodesCopy.filter((n) => n.id !== "umut");
+    outer.forEach((n, i) => {
+      const angle = (i / outer.length) * Math.PI * 2;
+      n.x = WIDTH / 2 + Math.cos(angle) * 160;
+      n.y = HEIGHT / 2 + Math.sin(angle) * 160;
+    });
 
     pinCenter(nodesCopy, WIDTH, HEIGHT);
 
@@ -80,7 +96,9 @@ export default function NodeGraph() {
     simRef.current = sim;
 
     if (prefersReducedMotion || isMobile) {
-      sim.tick(1);
+      // Run the simulation to equilibrium so nodes settle without overlap,
+      // then render the static result (no animation loop).
+      sim.tick(300);
       pinCenter(nodesCopy, WIDTH, HEIGHT);
       setNodePositions([...nodesCopy]);
       setLinkData(sim.force<any>("link")?.links() ?? linksCopy);
@@ -121,7 +139,7 @@ export default function NodeGraph() {
       if (perturbTimerRef.current) clearTimeout(perturbTimerRef.current);
       sim.stop();
     };
-  }, [prefersReducedMotion, isMobile]);
+  }, [prefersReducedMotion, isMobile, initialNodes, initialLinks]);
 
   const handleNodeClick = (node: GraphNode) => {
     if (!node.href) return;

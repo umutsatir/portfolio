@@ -27,7 +27,13 @@ export function getPostMeta(slug: string, locale: string): PostMeta | null {
   if (!fileContent) return null;
 
   const { data } = matter(fileContent);
-  return { ...data, slug } as PostMeta;
+  // YAML parses unquoted dates into Date objects; coerce to a YYYY-MM-DD string
+  // so it can be rendered and sorted safely.
+  const date =
+    data.date instanceof Date
+      ? data.date.toISOString().slice(0, 10)
+      : data.date;
+  return { ...data, date, slug } as PostMeta;
 }
 
 export function getAllPostsMeta(locale: string): PostMeta[] {
@@ -81,5 +87,9 @@ export async function getPostContent(slug: string, locale: string) {
   if (!fileContent) return null;
 
   const { data, content } = matter(fileContent);
-  return { meta: data as PostMeta, content };
+  const date =
+    data.date instanceof Date
+      ? data.date.toISOString().slice(0, 10)
+      : data.date;
+  return { meta: { ...data, slug, date } as PostMeta, content };
 }

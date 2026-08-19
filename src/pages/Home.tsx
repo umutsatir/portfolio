@@ -195,11 +195,9 @@ export default function Home() {
           SELECTED WORK — 03 PROJECTS
         </p>
         {workItems.map((item, i) => (
-          <a
+          <Link
             key={item.number}
-            href={item.href}
-            target="_blank"
-            rel="noopener noreferrer"
+            to={`/work/${item.slug}`}
             data-reveal
             className="dc-work-row"
             style={{
@@ -234,7 +232,7 @@ export default function Home() {
               </span>
             </span>
             <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 26 }}>↗</span>
-          </a>
+          </Link>
         ))}
       </section>
 

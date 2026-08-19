@@ -5,8 +5,11 @@ Rewrite of the portfolio site. React + Vite + TypeScript, no CSS framework — p
 ## Status
 
 - `Contact` — done, full port of `contact.dc.html`
-- `Home` — placeholder, port of `3-brutalist.dc.html` pending
-- `About` — placeholder, port of `about.dc.html` pending
+- `Home` — done, full port of `3-brutalist.dc.html`
+- `About` — done, full port of `about.dc.html`
+
+Not yet built: `sealed.dc.html` (project case-study detail page); work-item links
+point straight to GitHub repos instead.
 
 ## Dev
 

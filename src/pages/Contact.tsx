@@ -104,7 +104,7 @@ export default function Contact() {
         flexDirection: "column",
       }}
     >
-      <Nav />
+      <Nav current="contact" />
 
       <header style={{ padding: "70px 28px 48px", borderBottom: "1px solid #2A2A2A" }}>
         <h1

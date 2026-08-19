@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { site } from "../data/site";
 
-export default function Nav() {
+type Props = { current: "home" | "about" | "contact" };
+
+export default function Nav({ current }: Props) {
   return (
     <nav
       style={{
@@ -14,13 +16,18 @@ export default function Nav() {
         letterSpacing: ".08em",
       }}
     >
-      <Link to="/" style={{ fontWeight: 700 }}>
-        ← {site.brand}
-      </Link>
+      {current === "home" ? (
+        <span style={{ fontWeight: 700 }}>{site.brand}</span>
+      ) : (
+        <Link to="/" style={{ fontWeight: 700 }}>
+          ← {site.brand}
+        </Link>
+      )}
       <div style={{ display: "flex", gap: 28 }}>
-        <Link to="/">[HOME]</Link>
-        <Link to="/#work">[WORK]</Link>
-        <Link to="/about">[ABOUT]</Link>
+        {current !== "home" && <Link to="/">[HOME]</Link>}
+        {current !== "home" ? <Link to="/#work">[WORK]</Link> : <a href="#work">[WORK]</a>}
+        {current !== "about" && <Link to="/about">[ABOUT]</Link>}
+        {current !== "contact" && <Link to="/contact">[CONTACT]</Link>}
       </div>
     </nav>
   );

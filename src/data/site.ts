@@ -12,3 +12,122 @@ export const site = {
   pgp: "pgp: 3F91 A2C4 88D0 17BE",
   walletLabel: "umutsatir.dev wallet",
 };
+
+export const stackTiers = [
+  {
+    letter: "A",
+    tier: "DAILY_DRIVER",
+    items: ["TypeScript", "React", "Next.js", "MongoDB", "MySQL", "PHP", "Solidity", "Node.js"],
+    note: "// ships to mainnet every week",
+    dashed: false,
+  },
+  {
+    letter: "B",
+    tier: "COMFORTABLE",
+    items: ["Python", "PostgreSQL", "Docker", "AWS", "Linux"],
+    note: "// productive without the docs open",
+    dashed: false,
+  },
+  {
+    letter: "C",
+    tier: "EXPLORING",
+    items: ["Rust", "distributed systems", "zk-proofs", "Move"],
+    note: "// dangerous enough to ask good questions",
+    dashed: true,
+  },
+];
+
+export const workItems = [
+  {
+    number: "01",
+    title: "OBSCURA",
+    subtitle: "ON-CHAIN DAPPS · COMMIT-REVEAL · MONAD BLITZ ISTANBUL · MONAD TESTNET",
+    href: "https://github.com/GTU-Blockchain/obscura-monad-blitz-istanbul",
+  },
+  {
+    number: "02",
+    title: "ZK VOTING",
+    subtitle: "ANONYMOUS BALLOTS · ZK-SNARK MERKLE PROOF · NOIR + ULTRAHONK · SEPOLIA",
+    href: "https://github.com/umutsatir/zkvoting-app",
+  },
+  {
+    number: "03",
+    title: "ROAM-SWARM",
+    subtitle: "LOCATION DISCOVERY · WORLD ID · ENS · ETHGLOBAL CANNES",
+    href: "https://github.com/GTU-Blockchain/roamswarm-ethglobal-cannes-2026",
+  },
+];
+
+export const careerChain = [
+  {
+    block: "BLOCK #00",
+    year: "2022",
+    hash: "0000001",
+    prev: "———————",
+    title: "GENESIS",
+    desc: "First dApps, first smart contracts. Began exploring the Ethereum ecosystem through self-directed projects.",
+    winner: false,
+    filled: true,
+  },
+  {
+    block: "BLOCK #01",
+    year: "2022",
+    hash: "c15e0f6",
+    prev: "0000001",
+    title: "GTU BLOCKCHAIN",
+    desc: "Co-founded GTU Blockchain from scratch, leading the software committee and serving on the board.",
+    winner: false,
+    filled: false,
+  },
+  {
+    block: "BLOCK #02",
+    year: "2023",
+    hash: "3d9c441",
+    prev: "c15e0f6",
+    title: "ETHGLOBAL ISTANBUL",
+    desc: "Won first place with Cryptle, an on-chain Wordle with ETH staking, built with a five-person team.",
+    winner: true,
+    filled: false,
+  },
+  {
+    block: "BLOCK #03",
+    year: "2024",
+    hash: "f7b3a19",
+    prev: "3d9c441",
+    title: "SOFTWARE DEVELOPER @ XON",
+    desc: "PHP backend: database design, API architecture, and large-scale system design for corporate projects.",
+    winner: false,
+    filled: false,
+  },
+  {
+    block: "BLOCK #04",
+    year: "2025",
+    hash: "9c02e8d",
+    prev: "f7b3a19",
+    title: "SOFTWARE ENGINEER @ NODE101",
+    desc: "Joined node101 to build Web3 and zero-knowledge products, close to the infrastructure layer.",
+    winner: false,
+    filled: false,
+  },
+  {
+    block: "BLOCK #05",
+    year: "2026",
+    hash: "a41f7c2",
+    prev: "9c02e8d",
+    title: "ETHGLOBAL CANNES · ROAM-SWARM",
+    desc: "Location-based discovery protocol with on-chain unlocks and AI-generated place narratives.",
+    winner: false,
+    filled: false,
+  },
+  {
+    block: "BLOCK #06",
+    year: "2027",
+    hash: "???????",
+    prev: "a41f7c2",
+    title: "MSc · MILANO",
+    desc: "Distributed systems, Politecnico di Milano.",
+    winner: false,
+    filled: false,
+    future: true,
+  },
+];

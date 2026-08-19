@@ -60,6 +60,95 @@ textarea::placeholder {
     opacity: 1;
   }
 }
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes gateUp {
+  to {
+    transform: translateY(-101%);
+  }
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* Home: syncing-block gate overlay */
+.dc-gate {
+  animation: gateUp 0.8s cubic-bezier(0.76, 0, 0.24, 1) 1.5s forwards;
+}
+.dc-blink {
+  animation: blink 0.9s steps(2) infinite;
+}
+.dc-marquee {
+  animation: marquee 22s linear infinite;
+}
+
+/* Home: work-list row hover (background invert + arrow rotate + watermark fade) */
+.dc-work-row {
+  transition: background 0.18s ease, color 0.18s ease, padding 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.dc-work-row:hover {
+  background: #d8ff3e;
+  color: #0c0c0c !important;
+  padding-left: 52px !important;
+}
+.dc-work-row > span:last-child {
+  transition: transform 0.25s ease;
+}
+.dc-work-row:hover > span:last-child {
+  transform: rotate(45deg) scale(1.4);
+}
+.dc-work-row:hover .wm {
+  opacity: 0.45 !important;
+}
+
+/* Home + About: stack tag chip hover */
+.dc-tag {
+  transition: all 0.15s ease;
+  cursor: default;
+}
+.dc-tag:hover {
+  background: #d8ff3e;
+  color: #0c0c0c;
+  border-color: #d8ff3e;
+}
+
+/* Home + About: stack panel hover tint */
+.dc-stack-panel {
+  transition: background 0.2s ease;
+}
+.dc-stack-panel:hover {
+  background: rgba(216, 255, 62, 0.05);
+}
+/* Home only: watermark letter brightens on stack-panel hover */
+.dc-stack-panel-hot:hover .wm {
+  color: rgba(216, 255, 62, 0.18) !important;
+}
+
+/* About: career-chain block lift */
+.dc-chain-block {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.dc-chain-block:hover {
+  transform: translateY(-8px);
+  border-color: #d8ff3e;
+}
+
+/* Home + About: closing CTA hover */
+.dc-cta:hover {
+  color: #d8ff3e;
+}
 
 /* style-hover ports (React has no inline :hover) */
 .dc-btn-sign:hover {

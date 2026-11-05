@@ -25,6 +25,15 @@ export default function Home() {
 
   useHomeEffects({ skillCount: skills.length, skUser, setSk, setActive });
 
+  // Sticker collage scale: continuous with the viewport; on phones it fills the width under the copy (CSS reads --hz)
+  useEffect(() => {
+    const set = () =>
+      document.documentElement.style.setProperty("--hz", String(innerWidth < 520 ? (innerWidth - 36) / 600 : Math.min(0.8, innerWidth / 1667)));
+    set();
+    addEventListener("resize", set);
+    return () => removeEventListener("resize", set);
+  }, []);
+
   // body scroll lock while a modal is open
   useEffect(() => {
     document.documentElement.style.overflow = modal ? "hidden" : "";
@@ -52,7 +61,7 @@ export default function Home() {
     <div style={css("min-height:100vh;overflow:hidden;position:relative")}>
       <div data-bar style={css("position:fixed;top:0;left:0;height:5px;width:0;z-index:1100;background:#ffe680;border-bottom:2px solid #111")} />
 
-      <header style={css("position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px clamp(14px,3vw,36px);pointer-events:none")}>
+      <header className="hdr" style={css("position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px clamp(14px,3vw,36px);pointer-events:none")}>
         <a
           href="#top"
           {...P(
@@ -63,7 +72,7 @@ export default function Home() {
         >
           umut<span style={{ color: "#ffd21f" }}>.</span>
         </a>
-        <nav className="rise-t" style={css("pointer-events:auto;display:flex;gap:10px;padding:14px 14px 14px 10px;margin:-12px -8px -12px -8px;overflow-x:auto;min-width:0;scrollbar-width:none;--i:1")}>
+        <nav className="rise-t hdr-nav" style={css("pointer-events:auto;display:flex;gap:10px;padding:14px 14px 14px 10px;margin:-12px -8px -12px -8px;overflow-x:auto;min-width:0;scrollbar-width:none;--i:1")}>
           {navTabs.map(([id, label], i) => (
             <a
               key={id}
@@ -77,7 +86,7 @@ export default function Home() {
             </a>
           ))}
         </nav>
-        <div className="rise-t" style={css("pointer-events:auto;flex:none;display:flex;align-items:center;gap:14px;--i:2")}>
+        <div className="rise-t hdr-right" style={css("pointer-events:auto;flex:none;display:flex;align-items:center;gap:14px;--i:2")}>
           <a
             href={BLOG_URL}
             {...P(
@@ -315,7 +324,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={css("max-width:1380px;margin:0 auto;padding:110px clamp(18px,4vw,52px) 40px")}>
+      <section className="sec-tools" style={css("max-width:1380px;margin:0 auto;padding:110px clamp(18px,4vw,52px) 40px")}>
         <div data-reveal>
           <div style={css(`font:700 13px ${MONO};text-transform:uppercase;letter-spacing:.08em;color:#6d3fd6`)}>/ toolbox</div>
           <h2 style={css("margin:12px 0 40px;font:800 clamp(38px,5.4vw,82px)/.98 Syne,sans-serif;letter-spacing:-.045em")}>What I reach for</h2>
@@ -375,6 +384,7 @@ export default function Home() {
                 {...P(
                   `display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) auto;gap:10px 30px;padding:26px clamp(20px,3vw,40px);border-top:3px solid #111;background:${e.bg};transition:background .2s,padding-left .25s ${SPRING}`,
                   { h: "background:#ffe680;padding-left:clamp(34px,4.5vw,64px)" },
+                  "tl-row",
                 )}
               >
                 <div style={css(`font:700 14px ${MONO};color:#6d3fd6;padding-top:6px`)}>{e.year}</div>
@@ -392,16 +402,16 @@ export default function Home() {
       <section id="contact" style={css("padding:0 clamp(18px,4vw,52px) 80px;max-width:1380px;margin:0 auto")}>
         <div data-reveal style={css("padding:clamp(30px,6vw,80px);background:#fff;border:3px solid #111;border-radius:36px;box-shadow:10px 10px 0 #111")}>
           <div style={css(`font:700 13px ${MONO};text-transform:uppercase;letter-spacing:.08em`)}>{"/ contact · replies < 24h, usually < 2h"}</div>
-          <div style={css("margin-top:12px;font:800 clamp(44px,8vw,128px)/.92 Syne,sans-serif;letter-spacing:-.05em")}>
+          <div className="c-h" style={css("margin-top:12px;font:800 clamp(44px,8vw,128px)/.92 Syne,sans-serif;letter-spacing:-.05em")}>
             Got a hard problem?
             <br />
             <span style={css("display:inline-block;margin-top:8px;padding:0 .14em;background:#ffe680;border:3px solid #111;border-radius:.2em;transform:rotate(-1.5deg);box-shadow:6px 6px 0 #111")}>Let's ship it.</span>
           </div>
           <div style={css("margin-top:38px;display:flex;flex-wrap:wrap;gap:14px")}>
-            <a href={"mailto:" + EMAIL} data-magnet style={css("padding:18px 30px;background:#ffe680;color:#111;border:3px solid #111;border-radius:99px;box-shadow:5px 5px 0 #111;font:800 20px Syne,sans-serif")}>
+            <a href={"mailto:" + EMAIL} data-magnet className="c-btn" style={css("padding:18px 30px;background:#ffe680;color:#111;border:3px solid #111;border-radius:99px;box-shadow:5px 5px 0 #111;font:800 20px Syne,sans-serif")}>
               {EMAIL} ↗
             </a>
-            <a href="https://cal.com/umutsatir" target="_blank" data-magnet style={css("padding:18px 30px;background:#d9ccff;border:3px solid #111;border-radius:99px;box-shadow:5px 5px 0 #111;font:800 20px Syne,sans-serif")}>
+            <a href="https://cal.com/umutsatir" target="_blank" data-magnet className="c-btn" style={css("padding:18px 30px;background:#d9ccff;border:3px solid #111;border-radius:99px;box-shadow:5px 5px 0 #111;font:800 20px Syne,sans-serif")}>
               Book a call ↗
             </a>
           </div>

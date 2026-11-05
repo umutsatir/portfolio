@@ -43,18 +43,43 @@ html[data-app=blog] body{background:var(--bg);color:var(--ink)}
 html[data-app=blog][data-theme=dark] ::selection{background:#ffe680;color:#111}
 html[data-app=blog][data-theme=dark] mark[data-bt-hl]{color:#111}
 html[data-app=blog] input::placeholder{color:var(--ink)}
-/* hero layout: two columns on desktop; stickers sit beside the copy on mid widths; stacked on phones */
+/* hero layout: two columns on desktop; on mid widths the sticker collage stays beside the copy and
+   scales continuously with the viewport (--hz, set in Home); only on phones does it stack under the copy */
 .hero{display:grid;grid-template-columns:minmax(0,1fr);gap:30px 40px;align-items:center}
 .hero-art{position:relative;height:min(560px,92vw);min-height:440px;min-width:0}
 @media (min-width:1344px){.hero{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (min-width:760px) and (max-width:1343px){
-  /* the sticker collage keeps its desktop proportions (600x430) and is just scaled down with the viewport */
-  .hero{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"badge badge" "h1 h1" "copy art";gap:0 40px;align-content:center;align-items:start}
+@media (min-width:520px) and (max-width:1343px){
+  .hero{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"badge badge" "h1 h1" "copy art";gap:0 clamp(16px,3vw,40px);align-content:center;align-items:start}
   .hero-left{display:contents}
   .hero-badge{grid-area:badge;justify-self:start}
   .hero-h1{grid-area:h1}
   .hero-copy{grid-area:copy}
-  .hero-art{grid-area:art;width:600px;height:430px;min-height:0;zoom:.8;margin-top:18px}
+  .hero-art{grid-area:art;width:600px;height:430px;min-height:0;zoom:var(--hz,.5);margin-top:18px}
 }
-@media (min-width:900px) and (max-width:1099px){.hero-art{zoom:.66}}
-@media (min-width:760px) and (max-width:899px){.hero-art{zoom:.52}}
+
+/* phones */
+@media (max-width:720px){
+  .hdr{flex-wrap:wrap!important;row-gap:6px!important;padding:12px 14px 0!important}
+  .hdr-nav{order:3;flex:1 1 100%!important;margin:0!important;padding:6px 4px 12px!important}
+  .hdr-right{gap:8px!important}
+  .hdr-nav{gap:8px!important}
+  .hdr-nav a{padding:8px 12px!important;font-size:13px!important}
+  .hdr a,.hdr button{font-size:13px!important}
+  .hdr-right a,.hdr-right button{padding:8px 12px!important}
+  .hdr>a{padding:6px 14px!important;font-size:19px!important}
+  .hero{padding-top:150px!important;padding-bottom:60px!important}
+}
+@media (max-width:519px){
+  .hero-art{width:600px;height:430px;min-height:0;zoom:var(--hz,.59);margin-top:10px}
+  .hero-h1{font-size:calc((100vw - 40px) / 9.9)!important}
+  .hero-copy p{font-size:17px!important}
+}
+@media (max-width:600px){
+  #about{padding-top:70px!important;padding-bottom:50px!important}
+  #work{padding:70px 0!important}
+  .sec-tools{padding-top:70px!important}
+  #experience{padding-top:60px!important;padding-bottom:70px!important}
+  .tl-row{grid-template-columns:minmax(0,1fr)!important}
+  .c-btn{font-size:14px!important;padding:14px 20px!important;overflow-wrap:anywhere}
+  .c-h{font-size:10.5vw!important}
+}

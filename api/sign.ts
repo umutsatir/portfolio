@@ -1,8 +1,8 @@
 import { isAddress, isHex, verifyMessage } from "viem";
-import { isProfane } from "../shared/profanity.ts";
-import { SIGN_MAX_AGE_MS, buildSignMessage, cleanNote } from "../shared/signMessage.ts";
-import { resolveEns } from "./_lib/ens.ts";
-import { insertSignature } from "./_lib/supabase.ts";
+import { isProfane } from "../shared/profanity.js";
+import { SIGN_MAX_AGE_MS, buildSignMessage, cleanNote } from "../shared/signMessage.js";
+import { resolveEns } from "./_lib/ens.js";
+import { insertSignature } from "./_lib/supabase.js";
 
 /**
  * POST /api/sign  { address, signature, issuedAt, note? }

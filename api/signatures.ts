@@ -1,7 +1,7 @@
-import type { StoredRow } from "./_lib/supabase.ts";
-import { listSignatures, updateEns } from "./_lib/supabase.ts";
-import { resolveEns } from "./_lib/ens.ts";
-import { isProfane } from "../shared/profanity.ts";
+import type { StoredRow } from "./_lib/supabase.js";
+import { listSignatures, updateEns } from "./_lib/supabase.js";
+import { resolveEns } from "./_lib/ens.js";
+import { isProfane } from "../shared/profanity.js";
 
 const STALE_MS = 24 * 3600 * 1000; // rows that have a name
 const STALE_NO_NAME_MS = 10 * 60 * 1000; // rows without one: look again soon, the owner may just have set it up

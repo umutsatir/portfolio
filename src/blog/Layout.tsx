@@ -39,12 +39,13 @@ export function Paper({ children, headMargin, footMargin }: { children: ReactNod
         <div data-bt-hide className="rise" style={css(`display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:20px;margin-bottom:${headMargin}`)}>
           <a
             href={SITE_URL}
+            aria-label="umut."
             {...P(
-              "flex:none;padding:8px 18px;background:var(--card);color:var(--ink);border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--ink);font:800 21px Syne,sans-serif;letter-spacing:-.03em;rotate:-3deg;transition:rotate .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,background .15s",
-              { h: "background:#ffe680;color:#111;rotate:3deg;scale:1.1;box-shadow:6px 7px 0 var(--ink)" },
+              "flex:none;display:grid;place-items:center;width:46px;height:46px;background:var(--logo-bg);border-radius:14px;box-shadow:4px 4px 0 var(--logo-sh);font:800 32px/1 Syne,sans-serif;color:var(--logo-fg);letter-spacing:-.06em;padding-bottom:4px;box-sizing:border-box;transform:rotate(-3deg);transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,background .15s,color .15s",
+              { h: "background:#ffe680;color:#111;transform:rotate(3deg) scale(1.1);box-shadow:6px 7px 0 var(--ink)" },
             )}
           >
-            umut<span style={{ color: "#ffd21f" }}>.</span>
+            u
           </a>
           <nav style={css("display:flex;flex-wrap:wrap;gap:10px;padding:6px")}>
             <a

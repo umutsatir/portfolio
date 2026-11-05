@@ -37,8 +37,8 @@ input::placeholder{opacity:.5}
 .rise-t{animation:rise2 .7s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0)*var(--s,80ms))}
 @media (prefers-reduced-motion:reduce){.rise-t,.rise,.chipin,.grow,.rise-kids>*{animation:none}}
 /* blog theme: light by default, dark via html[data-theme=dark] (set before paint in index.html) */
-html[data-app=blog]{--bg:#fff;--card:#fff;--ink:#111;--ink-inv:#fff;--violet:#6d3fd6;--dots:rgba(17,17,17,.3);--ink-a:rgba(17,17,17,.1);--hl:#ffe680}
-html[data-app=blog][data-theme=dark]{color-scheme:dark;--bg:#15121d;--card:#201c2d;--ink:#f4f0ff;--ink-inv:#15121d;--violet:#b8a4ff;--dots:rgba(244,240,255,.16);--ink-a:rgba(244,240,255,.14);--hl:rgba(255,230,128,.4)}
+html[data-app=blog]{--bg:#fff;--card:#fff;--ink:#111;--ink-inv:#fff;--violet:#6d3fd6;--dots:rgba(17,17,17,.3);--ink-a:rgba(17,17,17,.1);--hl:#ffe680;--logo-bg:#111;--logo-fg:#ffe680;--logo-sh:#ffe680}
+html[data-app=blog][data-theme=dark]{color-scheme:dark;--bg:#15121d;--card:#201c2d;--ink:#f4f0ff;--ink-inv:#15121d;--violet:#b8a4ff;--dots:rgba(244,240,255,.16);--ink-a:rgba(244,240,255,.14);--hl:rgba(255,230,128,.4);--logo-bg:#ffe680;--logo-fg:#111;--logo-sh:#fff}
 html[data-app=blog] body{background:var(--bg);color:var(--ink)}
 html[data-app=blog][data-theme=dark] ::selection{background:#ffe680;color:#111}
 html[data-app=blog][data-theme=dark] mark[data-bt-hl]{color:#111}

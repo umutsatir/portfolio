@@ -40,9 +40,3 @@ export const navTabs = [
   ["experience", "Experience"],
   ["contact", "Contact"],
 ] as const;
-
-export const wallets = [
-  { t: "Browser wallet", bg: "#ffe680" },
-  { t: "Mobile wallet", bg: "#d9ccff" },
-  { t: "Hardware wallet", bg: "#b5efcf" },
-];

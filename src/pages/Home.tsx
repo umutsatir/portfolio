@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BLOG_URL } from "../lib/config";
 import { P, css } from "../lib/ui";
 import { useHomeEffects, resetChips } from "../hooks/useHomeEffects";
 import { projects, skills } from "../data/work";
 import { EMAIL, aboutWords, kv, links, navTabs, timeline } from "../data/site";
 import { CaseModal, WalletModal } from "../components/Modals";
+import SignaturePool, { type PoolStatus } from "../components/SignaturePool";
+import { fetchSignatures, signAndSubmit, type Signer } from "../lib/signatures";
+import { connect, discoverWallets, explain, type Eip1193, type WalletInfo } from "../lib/wallet";
 
 const SPRING = "cubic-bezier(.34,1.56,.64,1)";
 const MONO = "'JetBrains Mono',monospace";
@@ -22,6 +25,70 @@ export default function Home() {
   const [sk, setSk] = useState(0);
   const [ah, setAh] = useState(-1);
   const [menu, setMenu] = useState(false);
+
+  // ---- signature wall + wallet flow
+  const [pool, setPool] = useState<{ status: PoolStatus; items: Signer[]; total: number }>({ status: "loading", items: [], total: 0 });
+  const [wallets, setWallets] = useState<WalletInfo[] | null>(null);
+  const [account, setAccount] = useState<{ address: string; provider: Eip1193 } | null>(null);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [already, setAlready] = useState(false);
+
+  const loadPool = useCallback(async () => {
+    try {
+      const d = await fetchSignatures();
+      setPool({ status: "ok", items: d.items, total: d.total });
+    } catch {
+      setPool((p) => ({ ...p, status: "offline" }));
+    }
+  }, []);
+  useEffect(() => {
+    // ?demo-pool previews the pool with sample signers (design review / no database needed)
+    if (new URLSearchParams(location.search).has("demo-pool")) setPool({ status: "ok", items: demoSigners(), total: 128 });
+    else loadPool();
+  }, [loadPool]);
+
+  const openWallet = () => {
+    setError("");
+    setModal("wallet");
+    setStep(done ? 2 : account ? 1 : 0);
+  };
+  useEffect(() => {
+    if (modal !== "wallet" || step !== 0) return;
+    setWallets(null);
+    discoverWallets().then(setWallets);
+  }, [modal, step]);
+
+  const pick = async (w: WalletInfo) => {
+    setBusy(true);
+    setError("");
+    try {
+      const address = await connect(w);
+      setAccount({ address, provider: w.provider });
+      setStep(1);
+    } catch (e) {
+      setError(explain(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const sign = async () => {
+    if (!account) return;
+    setBusy(true);
+    setError("");
+    try {
+      const r = await signAndSubmit(account.address, account.provider.request.bind(account.provider), note);
+      setAlready(!r.created);
+      setDone(true);
+      setStep(2);
+      if (r.created) loadPool();
+    } catch (e) {
+      setError(explain(e));
+    } finally {
+      setBusy(false);
+    }
+  };
   const skUser = useRef(false);
 
   useHomeEffects({ skillCount: skills.length, skUser, setSk, setActive });
@@ -79,7 +146,7 @@ export default function Home() {
         <a
           href="#top"
           {...P(
-            `pointer-events:auto;flex:none;padding:8px 18px;background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;font:800 21px Syne,sans-serif;letter-spacing:-.03em;transform:rotate(-3deg);transition:transform .2s ${SPRING},box-shadow .2s,background .15s;--i:0`,
+            `pointer-events:auto;flex:none;padding:8px 18px;background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;font:800 21px Syne,sans-serif;letter-spacing:-.03em;color:#111;transform:rotate(-3deg);transition:transform .2s ${SPRING},box-shadow .2s,background .15s;--i:0`,
             { h: "background:#ffe680;transform:rotate(3deg) scale(1.1);box-shadow:6px 7px 0 #111" },
             "rise-t",
           )}
@@ -111,10 +178,7 @@ export default function Home() {
             Blog ↗
           </a>
           <button
-            onClick={() => {
-              setModal("wallet");
-              setStep(done ? 2 : 0);
-            }}
+            onClick={openWallet}
             {...P(
               `pointer-events:auto;flex:none;cursor:pointer;padding:10px 18px;background:#ffe680;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;font:700 14px 'DM Sans',sans-serif;color:#111;transform:rotate(2deg);transition:transform .2s ${SPRING},box-shadow .2s,background .15s`,
               { h: "background:#fff;transform:rotate(-2deg) scale(1.08);box-shadow:6px 7px 0 #111" },
@@ -160,8 +224,7 @@ export default function Home() {
             <button
               onClick={() => {
                 setMenu(false);
-                setModal("wallet");
-                setStep(done ? 2 : 0);
+                openWallet();
               }}
               style={css("flex:1 1 130px;cursor:pointer;min-height:60px;padding:14px 18px;box-sizing:border-box;background:#ffe680;color:#111;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #111;font:700 16px 'DM Sans',sans-serif")}
             >
@@ -432,6 +495,8 @@ export default function Home() {
         </div>
       </section>
 
+      <SignaturePool items={pool.items} total={pool.total} status={pool.status} onSign={openWallet} />
+
       <section id="experience" style={css("max-width:1380px;margin:0 auto;padding:100px clamp(18px,4vw,52px) 110px")}>
         <div data-reveal>
           <div style={css(`font:700 13px ${MONO};text-transform:uppercase;letter-spacing:.08em;color:#6d3fd6`)}>/ experience</div>
@@ -491,10 +556,35 @@ export default function Home() {
 
       {modal && (
         <div onClick={() => setModal(null)} style={css("position:fixed;inset:0;z-index:2000;background:rgba(26,11,59,.6);display:grid;place-items:center;padding:20px;overflow:auto;overscroll-behavior:contain")}>
-          {modal === "wallet" && <WalletModal step={step} onNext={() => { setStep(step + 1); setDone(step + 1 === 2); }} />}
+          {modal === "wallet" && (
+            <WalletModal step={step} wallets={wallets} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDone={() => setModal(null)} />
+          )}
           {modal === "case" && <CaseModal p={projects[ci]} onClose={() => setModal(null)} />}
         </div>
       )}
     </div>
   );
+}
+
+/** Sample signers for ?demo-pool. */
+function demoSigners(): Signer[] {
+  const D: Array<[string, string, string]> = [
+    ["mira.eth", "gm. the zk voting case study is wild.", "2m"],
+    ["0x91b2c0de7a1f3344a0b8c9d1e2f3a4b50007aa", "hire this man", "14m"],
+    ["kerem.eth", "solidity that holds money should be boring. agreed.", "1h"],
+    ["0xd4e8c0de7a1f3344a0b8c9d1e2f3a4b503b10", "gm from Berlin", "3h"],
+    ["selin.eth", "node101 is lucky.", "5h"],
+    ["0x5c0fc0de7a1f3344a0b8c9d1e2f3a4b5e2d9", "ship it.", "1d"],
+    ["anon.eth", "sticker wall > landing page", "1d"],
+    ["0xa11cc0de7a1f3344a0b8c9d1e2f3a4b59f42", "zk or die", "2d"],
+  ];
+  const unit = (t: string) => (t.endsWith("m") ? 60e3 : t.endsWith("h") ? 3600e3 : 86400e3);
+  return Array.from({ length: 5 }, (_, k) =>
+    D.map(([n, note, t], i) => ({
+      address: (n.startsWith("0x") ? n.slice(0, 38) + String(k).padStart(2, "0") + n.slice(-2) : n + "-" + k).toLowerCase(),
+      ens: n.endsWith(".eth") ? n : null,
+      note,
+      signed_at: new Date(Date.now() - parseInt(t) * unit(t) - i * 1000).toISOString(),
+    })),
+  ).flat();
 }

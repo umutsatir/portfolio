@@ -3,7 +3,16 @@ export const SIGN_STATEMENT = "Hi Umut, I'd like to talk about something interes
 export const SIGN_DOMAIN = "umutsatir.dev";
 /** How long a signature request stays valid. */
 export const SIGN_MAX_AGE_MS = 10 * 60 * 1000;
+export const NOTE_MAX = 80;
 
-export function buildSignMessage(address: string, issuedAt: string): string {
-  return `${SIGN_STATEMENT}\n\nSite: ${SIGN_DOMAIN}\nAddress: ${address.toLowerCase()}\nIssued: ${issuedAt}`;
+/** Single line, trimmed, capped. Empty -> null. */
+export function cleanNote(n: unknown): string | null {
+  if (typeof n !== "string") return null;
+  const t = n.replace(/\s+/g, " ").trim().slice(0, NOTE_MAX);
+  return t || null;
+}
+
+export function buildSignMessage(address: string, issuedAt: string, note?: string | null): string {
+  const base = `${SIGN_STATEMENT}\n\nSite: ${SIGN_DOMAIN}\nAddress: ${address.toLowerCase()}\nIssued: ${issuedAt}`;
+  return note ? `${base}\nNote: ${note}` : base;
 }

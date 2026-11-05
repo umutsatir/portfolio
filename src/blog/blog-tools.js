@@ -342,7 +342,7 @@
       paper.classList.add('bt-cap');
       var brand = document.createElement('div');
       brand.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;max-width:1180px;margin:8px auto 0;padding:26px clamp(18px,4vw,56px) 36px;box-sizing:border-box';
-      brand.innerHTML = '<span style="padding:8px 18px;background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;font:800 21px Syne,sans-serif;letter-spacing:-.03em;rotate:-3deg">umut<span style="color:#ffd21f">.</span></span><span style="font:700 14px \'JetBrains Mono\',monospace">Servers first. Chains too.</span><span style="padding:12px 24px;background:#111;color:#ffe680;border-radius:99px;font:800 21px Syne,sans-serif;letter-spacing:-.02em">umutsatir.dev</span>';
+      brand.innerHTML = '<span style="display:grid;place-items:center;width:46px;height:46px;background:#111;border-radius:14px;box-shadow:4px 4px 0 #ffe680;font:800 32px/1 Syne,sans-serif;color:#ffe680;letter-spacing:-.06em;padding-bottom:4px;box-sizing:border-box;rotate:-3deg">u</span><span style="font:700 14px \'JetBrains Mono\',monospace">Servers first. Chains too.</span><span style="padding:12px 24px;background:#111;color:#ffe680;border-radius:99px;font:800 21px Syne,sans-serif;letter-spacing:-.02em">umutsatir.dev</span>';
       var olds = [].slice.call(paper.querySelectorAll('[data-bt-footer]')); olds.forEach(function (f) { f.style.display = 'none'; });
       paper.appendChild(brand);
       var w = paper.scrollWidth, h = paper.scrollHeight;

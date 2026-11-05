@@ -21,7 +21,7 @@ browser: GET /api/signatures      ->  { total, items: latest 60 visible signers 
 ```
 
 - The message is built by `shared/signMessage.ts` (statement, site, lowercase address, issued-at, optional note up to 80 chars). The note is part of what is signed, so it cannot be altered afterwards. A request is valid for 10 minutes.
-- **ENS:** the name is resolved when someone signs and again (a few rows per request, at most daily) when the wall is loaded, so names registered later show up on their own. The avatar is fetched in the browser from the official ENS metadata service (`metadata.ens.domains`) and falls back to the identicon. Set `MAINNET_RPC_URL` for a more reliable RPC than the public default.
+- **ENS:** the name is resolved when someone signs and again (a few rows per request: daily for rows with a name, every 10 minutes for rows without one) when the wall is loaded, so names registered later show up on their own. The avatar is fetched in the browser from the official ENS metadata service (`metadata.ens.domains`) and falls back to the identicon. Set `MAINNET_RPC_URL` for a more reliable RPC than the public default.
 - RLS: only `select` on `address, ens, signed_at` of non-hidden rows is open to the anon role. All writes go through the service role.
 - **Moderation:** in the Supabase table editor set `hidden = true` on a row to remove it from the wall (or delete the row).
 - **Limitation:** verification is EOA-only (MetaMask, Rabby, Coinbase Wallet, hardware wallets). Smart-contract wallets (Safe, etc.) need ERC-1271 verification through an RPC and are rejected for now.

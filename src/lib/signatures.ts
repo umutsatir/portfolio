@@ -18,17 +18,12 @@ export function messageFor(address: string, issuedAt: string, note?: string) {
 }
 
 /**
- * Ask the wallet for the signature and send it to the API.
- * `request` is the EIP-1193 `provider.request` of the connected wallet.
+ * Ask the wallet for the signature (`sign` = personal_sign of the connected wallet) and send it to the API.
  */
-export async function signAndSubmit(
-  address: string,
-  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>,
-  noteInput = "",
-): Promise<SignResult> {
+export async function signAndSubmit(address: string, sign: (message: string) => Promise<string>, noteInput = ""): Promise<SignResult> {
   const note = cleanNote(noteInput);
   const issuedAt = new Date().toISOString();
-  const signature = (await request({ method: "personal_sign", params: [messageFor(address, issuedAt, note ?? undefined), address] })) as string;
+  const signature = await sign(messageFor(address, issuedAt, note ?? undefined));
   const res = await fetch("/api/sign", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

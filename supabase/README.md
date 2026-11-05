@@ -27,7 +27,7 @@ browser: GET /api/signatures      ->  { total, items: latest 60 visible signers 
 
 ## Client helpers
 
-`src/lib/signatures.ts`: `fetchSignatures()`, `signAndSubmit(address, provider.request, note)`. `src/lib/wallet.ts`: EIP-6963 wallet discovery + connect. UI: `src/components/SignaturePool.tsx` (physics pool) and `WalletModal` in `src/components/Modals.tsx`.
+`src/lib/signatures.ts`: `fetchSignatures()`, `signAndSubmit(address, provider.request, note)`. `src/lib/wagmi.ts` + `src/lib/wallet.ts`: headless wagmi (EIP-6963 injected wallets + WalletConnect with our own QR), lazy-loaded when the wallet modal opens. WalletConnect needs `VITE_WALLETCONNECT_PROJECT_ID` (free, dashboard.reown.com); without it that option is hidden. UI: `src/components/SignaturePool.tsx` (physics pool) and `WalletModal` in `src/components/Modals.tsx`.
 
 Preview the pool without a database: open `/?demo-pool` (sample signers).
 

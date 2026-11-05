@@ -7,7 +7,7 @@ import { EMAIL, aboutWords, kv, links, navTabs, timeline } from "../data/site";
 import { CaseModal, WalletModal } from "../components/Modals";
 import SignaturePool, { type PoolStatus } from "../components/SignaturePool";
 import { fetchSignatures, signAndSubmit, type Signer } from "../lib/signatures";
-import { connect, discoverWallets, explain, type Eip1193, type WalletInfo } from "../lib/wallet";
+import { cancelConnect, connectWallet, explain, listWallets, type Connected, type WalletOption } from "../lib/wallet";
 
 const SPRING = "cubic-bezier(.34,1.56,.64,1)";
 const MONO = "'JetBrains Mono',monospace";
@@ -28,8 +28,11 @@ export default function Home() {
 
   // ---- signature wall + wallet flow
   const [pool, setPool] = useState<{ status: PoolStatus; items: Signer[]; total: number }>({ status: "loading", items: [], total: 0 });
-  const [wallets, setWallets] = useState<WalletInfo[] | null>(null);
-  const [account, setAccount] = useState<{ address: string; provider: Eip1193 } | null>(null);
+  const [wallets, setWallets] = useState<WalletOption[] | null>(null);
+  const [account, setAccount] = useState<Connected | null>(null);
+  const [wcUri, setWcUri] = useState<string | null>(null);
+  const picked = useRef<WalletOption | null>(null);
+  const attempt = useRef(0);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -57,31 +60,50 @@ export default function Home() {
   useEffect(() => {
     if (modal !== "wallet" || step !== 0) return;
     setWallets(null);
-    discoverWallets().then(setWallets);
+    listWallets().then(setWallets);
   }, [modal, step]);
 
-  const pick = async (w: WalletInfo) => {
+  const pick = async (w: WalletOption) => {
+    const id = ++attempt.current;
+    picked.current = w;
     setBusy(true);
     setError("");
+    if (w.kind === "walletconnect") {
+      setWcUri(null);
+      setStep(3);
+    }
     try {
-      const address = await connect(w);
-      setAccount({ address, provider: w.provider });
+      const c = await connectWallet(w, setWcUri);
+      if (id !== attempt.current) return void c.disconnect().catch(() => {}); // visitor went back meanwhile
+      setAccount(c);
       setStep(1);
     } catch (e) {
+      if (id !== attempt.current) return;
       setError(explain(e));
+      setStep(0);
     } finally {
-      setBusy(false);
+      if (id === attempt.current) setBusy(false);
     }
+  };
+  const back = () => {
+    attempt.current++;
+    if (picked.current) cancelConnect(picked.current);
+    setBusy(false);
+    setWcUri(null);
+    setError("");
+    setStep(0);
   };
   const sign = async () => {
     if (!account) return;
     setBusy(true);
     setError("");
     try {
-      const r = await signAndSubmit(account.address, account.provider.request.bind(account.provider), note);
+      const r = await signAndSubmit(account.address, account.sign, note);
       setAlready(!r.created);
       setDone(true);
       setStep(2);
+      account.disconnect().catch(() => {}); // the signature is all we needed
+      setAccount(null);
       if (r.created) loadPool();
     } catch (e) {
       setError(explain(e));
@@ -557,7 +579,7 @@ export default function Home() {
       {modal && (
         <div onClick={() => setModal(null)} style={css("position:fixed;inset:0;z-index:2000;background:rgba(26,11,59,.6);display:grid;place-items:center;padding:20px;overflow:auto;overscroll-behavior:contain")}>
           {modal === "wallet" && (
-            <WalletModal step={step} wallets={wallets} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDone={() => setModal(null)} />
+            <WalletModal step={step} wallets={wallets} wcUri={wcUri} onBack={back} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDone={() => setModal(null)} />
           )}
           {modal === "case" && <CaseModal p={projects[ci]} onClose={() => setModal(null)} />}
         </div>

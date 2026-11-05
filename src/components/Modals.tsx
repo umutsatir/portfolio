@@ -2,7 +2,8 @@ import { P, css } from "../lib/ui";
 import { EMAIL } from "../data/site";
 import { NOTE_MAX } from "../../shared/signMessage";
 import { shortAddress } from "../lib/signatures";
-import type { WalletInfo } from "../lib/wallet";
+import type { WalletOption } from "../lib/wallet";
+import { useEffect, useState } from "react";
 import type { Project } from "../data/work";
 
 const MONO = "'JetBrains Mono',monospace";
@@ -12,13 +13,15 @@ const WALLET_BG = ["#ffe680", "#d9ccff", "#b5efcf", "#b9defa", "#ffc7a1"];
 
 export type WalletModalProps = {
   step: number;
-  wallets: WalletInfo[] | null; // null while discovering
+  wallets: WalletOption[] | null; // null while discovering
+  wcUri: string | null; // WalletConnect pairing URI (step 3)
   address: string | null;
   note: string;
   busy: boolean;
   error: string;
   alreadySigned: boolean;
-  onPick: (w: WalletInfo) => void;
+  onPick: (w: WalletOption) => void;
+  onBack: () => void;
   onNote: (v: string) => void;
   onSign: () => void;
   onDone: () => void;
@@ -40,11 +43,32 @@ export function WalletModal(p: WalletModalProps) {
           )}
           {p.wallets?.map((w, i) => (
             <button key={w.id} disabled={p.busy} onClick={() => p.onPick(w)} style={css(`cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:12px;padding:14px 18px;background:${WALLET_BG[i % WALLET_BG.length]};border:3px solid #111;border-radius:18px;font:700 17px 'DM Sans',sans-serif;color:#111;text-align:left;opacity:${p.busy ? 0.6 : 1}`)}>
-              {w.icon && <img src={w.icon} alt="" width={26} height={26} style={css("border-radius:6px;flex:none")} />}
+              {w.icon ? (
+                <img src={w.icon} alt="" width={26} height={26} style={css("border-radius:6px;flex:none")} />
+              ) : (
+                <span style={css("flex:none;display:grid;place-items:center;width:26px;height:26px;background:#111;color:#ffe680;border-radius:6px;font:800 11px Syne,sans-serif")}>{w.kind === "walletconnect" ? "WC" : "◎"}</span>
+              )}
               <span style={css("flex:1")}>{w.name}</span>
               <span>→</span>
             </button>
           ))}
+          {p.error && <Err text={p.error} />}
+        </div>
+      )}
+      {p.step === 3 && (
+        <div>
+          <div style={css(title)}>Scan with your wallet</div>
+          <p style={css("margin:10px 0 16px;font-size:15px;line-height:1.5")}>Open your wallet app, scan the code and approve the connection. You'll only sign a message.</p>
+          <div style={css("display:grid;place-items:center;width:240px;height:240px;margin:0 auto;background:#fff;border:3px solid #111;border-radius:20px;box-shadow:5px 5px 0 #111")}>
+            {p.wcUri ? <Qr value={p.wcUri} /> : <span style={css("font:500 13px 'JetBrains Mono',monospace")}>preparing the code…</span>}
+          </div>
+          {p.wcUri && (
+            <div style={css("display:flex;gap:10px;margin-top:20px")}>
+              <a href={p.wcUri} style={css("flex:1;text-align:center;padding:12px;background:#ffe680;border:3px solid #111;border-radius:14px;font-weight:700")}>Open wallet app</a>
+              <CopyButton text={p.wcUri} />
+            </div>
+          )}
+          <button onClick={p.onBack} style={css("cursor:pointer;margin-top:14px;padding:0;background:none;border:0;font:700 14px 'DM Sans',sans-serif;color:#111;border-bottom:2px solid #111")}>← Choose another wallet</button>
           {p.error && <Err text={p.error} />}
         </div>
       )}
@@ -80,6 +104,35 @@ export function WalletModal(p: WalletModalProps) {
         </div>
       )}
     </div>
+  );
+}
+
+function Qr({ value }: { value: string }) {
+  const [src, setSrc] = useState("");
+  useEffect(() => {
+    let live = true;
+    import("qrcode").then((m) => m.toDataURL(value, { margin: 1, width: 440, color: { dark: "#111111", light: "#ffffff" } })).then((u) => live && setSrc(u));
+    return () => {
+      live = false;
+    };
+  }, [value]);
+  return src ? <img src={src} alt="WalletConnect QR code" width={216} height={216} style={css("display:block;border-radius:10px")} /> : null;
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [ok, setOk] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard?.writeText(text).then(() => {
+          setOk(true);
+          setTimeout(() => setOk(false), 1500);
+        });
+      }}
+      style={css("flex:1;cursor:pointer;padding:12px;background:#fff;border:3px solid #111;border-radius:14px;font:700 16px 'DM Sans',sans-serif;color:#111")}
+    >
+      {ok ? "Copied ✓" : "Copy link"}
+    </button>
   );
 }
 

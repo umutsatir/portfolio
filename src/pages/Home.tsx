@@ -173,6 +173,7 @@ export default function Home() {
       <header className="hdr" style={css("position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px clamp(14px,3vw,36px);pointer-events:none")}>
         <a
           href="#top"
+          onClick={goTo("top")}
           {...P(
             `pointer-events:auto;flex:none;padding:8px 18px;background:#fff;border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 #111;font:800 21px Syne,sans-serif;letter-spacing:-.03em;color:#111;transform:rotate(-3deg);transition:transform .2s ${SPRING},box-shadow .2s,background .15s;--i:0`,
             { h: "background:#ffe680;transform:rotate(3deg) scale(1.1);box-shadow:6px 7px 0 #111" },
@@ -186,6 +187,7 @@ export default function Home() {
             <a
               key={id}
               href={"#" + id}
+              onClick={goTo(id)}
               {...P(
                 `flex:none;padding:9px 16px;background:${active === id ? "#ffe680" : "#fff"};border:3px solid #111;border-radius:14px;box-shadow:3px 3px 0 #111;font:700 14px 'DM Sans',sans-serif;transform:${active === id ? "rotate(0deg) translateY(-2px)" : "rotate(" + tabRot[i] + "deg)"};transition:transform .2s ${SPRING},box-shadow .2s,background .15s`,
                 { h: "background:#ffe680;transform:translateY(-4px) rotate(0deg) scale(1.08);box-shadow:5px 7px 0 #111" },
@@ -290,10 +292,10 @@ export default function Home() {
             </span>
           </p>
           <div className="rise-t" style={css("margin-top:32px;display:flex;flex-wrap:wrap;gap:14px;--i:5")}>
-            <a href="#work" data-magnet style={css("padding:16px 26px;background:#111;color:#fff;border-radius:99px;font-weight:700;font-size:16px;border:3px solid #111")}>
+            <a href="#work" onClick={goTo("work")} data-magnet style={css("padding:16px 26px;background:#111;color:#fff;border-radius:99px;font-weight:700;font-size:16px;border:3px solid #111")}>
               See my work ↓
             </a>
-            <a href="#contact" data-magnet style={css("padding:16px 26px;background:#fff;border:3px solid #111;border-radius:99px;box-shadow:4px 4px 0 #111;font-weight:700;font-size:16px")}>
+            <a href="#contact" onClick={goTo("contact")} data-magnet style={css("padding:16px 26px;background:#fff;border:3px solid #111;border-radius:99px;box-shadow:4px 4px 0 #111;font-weight:700;font-size:16px")}>
               Say hi
             </a>
           </div>
@@ -579,7 +581,7 @@ export default function Home() {
       </section>
       <footer style={css("max-width:1380px;margin:0 auto;padding:0 clamp(18px,4vw,52px) 40px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font:700 13px 'JetBrains Mono',monospace")}>
         <span>© 2026 Umut Satır · umut.eth · built once, with intent</span>
-        <a href="#top" style={css("border-bottom:2px solid #111")}>Back to top ↑</a>
+        <a href="#top" onClick={goTo("top")} style={css("border-bottom:2px solid #111")}>Back to top ↑</a>
       </footer>
 
       {modal && (

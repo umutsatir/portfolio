@@ -1,12 +1,50 @@
 import { useState } from "react";
 import { P, css } from "../lib/ui";
-import { BLOG_BASENAME } from "../lib/config";
+import { BLOG_BASENAME, SITE_URL } from "../lib/config";
 import { MONTHS_LONG, posts, tagColor, tags } from "./posts";
 import { Paper } from "./Layout";
 
 const MONO = "'JetBrains Mono',monospace";
 
+function EmptyBlog() {
+  const card = "position:relative;padding:clamp(28px,4vw,48px);background:var(--card);border:3px solid var(--ink);border-radius:28px;box-shadow:8px 8px 0 var(--ink)";
+  return (
+    <Paper headMargin="clamp(40px,7vw,72px)" footMargin={60}>
+      <div className="rise" style={css("--i:1")}>
+        <div style={css(`font:700 13px ${MONO};text-transform:uppercase;letter-spacing:.08em;color:var(--violet)`)}>/ blog</div>
+        <h1 style={css("margin:14px 0 0;font:800 clamp(44px,5.8vw,84px)/1 Syne,sans-serif;letter-spacing:-.045em")}>
+          Notes &amp; <span style={css("display:inline-block;padding:0 .14em;background:#ffe680;color:#111;border:3px solid var(--ink);border-radius:14px")}>writing</span>
+        </h1>
+      </div>
+      <div style={css("flex:1;display:flex;flex-direction:column;justify-content:center;padding:44px 0 clamp(20px,6vh,70px)")}>
+      <div className="rise" style={css(`${card};--i:3;max-width:760px`)}>
+        <span style={css(`position:absolute;top:-16px;right:28px;padding:5px 14px;background:#ffe680;color:#111;border:2px solid var(--ink);border-radius:99px;font:700 12px ${MONO};letter-spacing:.06em;transform:rotate(3deg)`)}>0 POSTS</span>
+        <div style={css("display:flex;gap:10px;margin-bottom:26px")}>
+          {["#ffc7a1", "#e4d9ff", "#b9defa"].map((c, i) => (
+            <span key={c} style={css(`width:46px;height:46px;border-radius:50%;background:${c};border:2px solid var(--ink);display:grid;place-items:center;font:800 18px Syne,sans-serif;color:#111;animation:bob 2.6s ease-in-out ${i * 0.25}s infinite`)}>{["✎", "?", "…"][i]}</span>
+          ))}
+        </div>
+        <h2 style={css("margin:0;font:800 clamp(28px,3.4vw,44px)/1.05 Syne,sans-serif;letter-spacing:-.04em")}>Nothing here yet.</h2>
+        <p style={css("margin:16px 0 0;max-width:520px;font-size:18px;line-height:1.6;font-weight:500")}>The first write-up is still in the draft pile. Security notes, ZK experiments and hackathon post-mortems land here when they are done.</p>
+        <div style={css("display:flex;flex-wrap:wrap;gap:12px;margin-top:28px")}>
+          <a
+            href={SITE_URL}
+            {...P("padding:12px 22px;background:var(--ink);color:var(--ink-inv);border:3px solid var(--ink);border-radius:99px;font:700 15px 'DM Sans',sans-serif;transition:translate .2s cubic-bezier(.3,1.5,.5,1),background .2s,color .2s", { h: "background:#ffe680;color:#111;translate:0 -3px" })}
+          >
+            ← Back to site
+          </a>
+        </div>
+      </div>
+      </div>
+    </Paper>
+  );
+}
+
 export default function BlogList() {
+  return posts.length ? <PostList /> : <EmptyBlog />;
+}
+
+function PostList() {
   const [f, setF] = useState("All");
   const [q, setQ] = useState("");
   const s = q.trim().toLowerCase();

@@ -35,7 +35,7 @@ function ThemeToggle() {
 export function Paper({ children, headMargin, footMargin }: { children: ReactNode; headMargin: string; footMargin: number }) {
   return (
     <div data-paper style={css(PAPER)}>
-      <div style={css("max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,56px) 40px")}>
+      <div style={css("max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,56px) 40px;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column")}>
         <div data-bt-hide className="rise" style={css(`display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:20px;margin-bottom:${headMargin}`)}>
           <a
             href={SITE_URL}
@@ -61,7 +61,7 @@ export function Paper({ children, headMargin, footMargin }: { children: ReactNod
           </nav>
         </div>
         {children}
-        <div data-bt-footer style={css(`margin-top:${footMargin}px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font:700 13px 'JetBrains Mono',monospace`)}>
+        <div data-bt-footer style={css(`margin-top:auto;padding-top:${footMargin}px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font:700 13px 'JetBrains Mono',monospace`)}>
           <span>© 2026 Umut Satır</span>
           <span>Servers first. Chains too.</span>
         </div>

@@ -15,8 +15,15 @@
     />
     <script>
       // Blog lives on blog.<domain>; in dev it lives under /blog. Mark it before first paint.
-      if (location.hostname.indexOf("blog.") === 0 || location.pathname.indexOf("/blog") === 0)
+      if (location.hostname.indexOf("blog.") === 0 || location.pathname.indexOf("/blog") === 0) {
         document.documentElement.dataset.app = "blog";
+        // Blog theme: saved choice, else the system setting.
+        try {
+          var t = localStorage.getItem("blog-theme");
+          if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.dataset.theme = t;
+        } catch (e) {}
+      }
     </script>
   </head>
   <body>

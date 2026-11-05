@@ -65,6 +65,7 @@ export default function BlogPost() {
   const n = posts[i];
   const nx = posts[(i + 1) % posts.length];
   const at = n.title.indexOf(n.hl);
+  const hasHl = at >= 0; // hl must be an exact substring of title, else the title renders plain
   const [y, m, d] = n.date.split("-").map(Number);
   const date = MONTHS_SHORT[m - 1] + " " + d + ", " + y;
   const { Body } = n;
@@ -79,16 +80,16 @@ export default function BlogPost() {
         >
           ← All notes
         </a>
-        <article style={css("max-width:960px;margin-top:34px")}>
+        <article className="rise-kids" style={css("max-width:960px;margin-top:34px")}>
           <div style={css("display:flex;gap:10px;flex-wrap:wrap;align-items:center")}>
             <span style={css(`padding:3px 12px;background:${tagColor[n.tag]};border:2px solid #111;border-radius:99px;font:700 12px ${MONO};text-transform:uppercase;letter-spacing:.04em`)}>{n.tag}</span>
             {n.essay && <span style={css(`padding:3px 11px;background:#111;color:#fff;border-radius:99px;font:700 11px ${MONO};letter-spacing:.06em`)}>ESSAY</span>}
             <span style={css(`font:700 12px ${MONO};opacity:.7`)}>{date} · {n.mins} min read</span>
           </div>
           <h1 style={css("margin:22px 0 0;font:800 clamp(34px,4.6vw,60px)/1.05 Syne,sans-serif;letter-spacing:-.045em;overflow-wrap:break-word")}>
-            {n.title.slice(0, at)}
-            <span style={css("display:inline-block;padding:0 .12em;background:#ffe680;border:3px solid #111;border-radius:12px")}>{n.hl}</span>
-            {n.title.slice(at + n.hl.length)}
+            {hasHl ? n.title.slice(0, at) : n.title}
+            {hasHl && <span style={css("display:inline-block;padding:0 .12em;background:#ffe680;border:3px solid #111;border-radius:12px")}>{n.hl}</span>}
+            {hasHl && n.title.slice(at + n.hl.length)}
           </h1>
           <div style={css("margin-top:32px;padding:18px 22px;background:#ffe680;border:2px solid #111;border-radius:18px")}>
             <div style={css(`font:700 12px ${MONO};letter-spacing:.08em`)}>TL;DR</div>

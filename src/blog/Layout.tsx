@@ -8,7 +8,7 @@ export function Paper({ children, headMargin, footMargin }: { children: ReactNod
   return (
     <div data-paper style={css(PAPER)}>
       <div style={css("max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,56px) 40px")}>
-        <div data-bt-hide style={css(`display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:20px;margin-bottom:${headMargin}`)}>
+        <div data-bt-hide className="rise" style={css(`display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;padding-top:20px;margin-bottom:${headMargin}`)}>
           <a
             href={SITE_URL}
             {...P(

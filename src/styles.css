@@ -18,3 +18,18 @@ a{color:inherit;text-decoration:none}
 /* blog */
 html[data-app=blog] a:hover{color:inherit}
 input::placeholder{color:#111;opacity:.5}
+/* blog load-in */
+@keyframes rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes chipin{from{opacity:0;transform:translateY(14px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.rise{animation:rise .65s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0)*var(--s,70ms))}
+.chipin{animation:chipin .5s cubic-bezier(.3,1.5,.5,1) backwards;animation-delay:calc(var(--i,0)*45ms)}
+.grow{transform-origin:top;animation:grow .9s cubic-bezier(.2,.7,.2,1) .15s backwards}
+.rise-kids>*{animation:rise .65s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:.9s}
+.rise-kids>:nth-child(1){animation-delay:.05s}.rise-kids>:nth-child(2){animation-delay:.12s}
+.rise-kids>:nth-child(3){animation-delay:.19s}.rise-kids>:nth-child(4){animation-delay:.26s}
+.rise-kids>:nth-child(5){animation-delay:.33s}.rise-kids>:nth-child(6){animation-delay:.4s}
+.rise-kids>:nth-child(7){animation-delay:.47s}.rise-kids>:nth-child(8){animation-delay:.54s}
+.rise-kids>:nth-child(9){animation-delay:.61s}.rise-kids>:nth-child(10){animation-delay:.68s}
+.rise-kids>:nth-child(11){animation-delay:.75s}.rise-kids>:nth-child(12){animation-delay:.82s}
+@media (prefers-reduced-motion:reduce){.rise,.chipin,.grow,.rise-kids>*{animation:none}}

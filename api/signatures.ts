@@ -1,6 +1,7 @@
 import type { StoredRow } from "./_lib/supabase.ts";
 import { listSignatures, updateEns } from "./_lib/supabase.ts";
 import { resolveEns } from "./_lib/ens.ts";
+import { isProfane } from "../shared/profanity.ts";
 
 const STALE_MS = 24 * 3600 * 1000; // rows that have a name
 const STALE_NO_NAME_MS = 10 * 60 * 1000; // rows without one: look again soon, the owner may just have set it up
@@ -24,7 +25,8 @@ export async function GET() {
         await updateEns(r.address, ens).catch(() => {});
       }),
     );
-    const out = items.map(({ address, ens, note, signed_at }) => ({ address, ens, note, signed_at }));
+    // a note that is not allowed (e.g. stored before a word was added to the list) is simply not shown
+    const out = items.map(({ address, ens, note, signed_at }) => ({ address, ens, note: note && !isProfane(note) ? note : null, signed_at }));
     return Response.json({ total, items: out }, { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } });
   } catch {
     return Response.json({ error: "unavailable" }, { status: 503 });

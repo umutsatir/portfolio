@@ -134,6 +134,8 @@ export function explain(e: unknown): string {
   switch (err?.message) {
     case "signature_mismatch":
       return "That signature didn't verify. Smart-contract wallets aren't supported yet, try a regular wallet.";
+    case "note_not_allowed":
+      return "That note contains words that aren't allowed here. Please keep it friendly.";
     case "expired":
       return "The request took too long. Please try again.";
     case "unavailable":

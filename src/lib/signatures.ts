@@ -1,4 +1,5 @@
 import { buildSignMessage, cleanNote } from "../../shared/signMessage";
+import { isProfane } from "../../shared/profanity";
 
 export type Signer = { address: string; ens: string | null; note: string | null; signed_at: string };
 export type SignatureList = { total: number; items: Signer[] };
@@ -22,6 +23,7 @@ export function messageFor(address: string, issuedAt: string, note?: string) {
  */
 export async function signAndSubmit(address: string, sign: (message: string) => Promise<string>, noteInput = ""): Promise<SignResult> {
   const note = cleanNote(noteInput);
+  if (note && isProfane(note)) throw new Error("note_not_allowed"); // checked before the wallet is asked for anything
   const issuedAt = new Date().toISOString();
   const signature = await sign(messageFor(address, issuedAt, note ?? undefined));
   const res = await fetch("/api/sign", {
@@ -33,6 +35,8 @@ export async function signAndSubmit(address: string, sign: (message: string) => 
   if (!res.ok) throw new Error(data?.error ?? "sign_failed");
   return data as SignResult;
 }
+
+export const noteAllowed = (n: string) => !isProfane(cleanNote(n) ?? "");
 
 export const shortAddress = (a: string) => a.slice(0, 6) + "…" + a.slice(-4);
 export const signerName = (s: Pick<Signer, "address" | "ens">) => s.ens || shortAddress(s.address);

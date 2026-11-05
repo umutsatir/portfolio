@@ -24,6 +24,7 @@ browser: GET /api/signatures      ->  { total, items: latest 60 visible signers 
 - **ENS:** the name is resolved when someone signs and again (a few rows per request: daily for rows with a name, every 10 minutes for rows without one) when the wall is loaded, so names registered later show up on their own. The avatar is fetched in the browser from the official ENS metadata service (`metadata.ens.domains`) and falls back to the identicon. Set `MAINNET_RPC_URL` for a more reliable RPC than the public default.
 - RLS: only `select` on `address, ens, signed_at` of non-hidden rows is open to the anon role. All writes go through the service role.
 - **Moderation:** in the Supabase table editor set `hidden = true` on a row to remove it from the wall (or delete the row).
+- **Note filter:** English + Turkish profanity and slurs are blocked (`shared/profanity.ts`; the word lists are plain arrays you can edit). The browser warns before the wallet is asked to sign, the API enforces it (422 `note_not_allowed`), and a stored note that is no longer allowed is simply not shown on the wall. It matches whole words (so "class" or "Amina" pass) and sees through leetspeak, stretched or spaced letters and Turkish diacritics.
 - **Limitation:** verification is EOA-only (MetaMask, Rabby, Coinbase Wallet, hardware wallets). Smart-contract wallets (Safe, etc.) need ERC-1271 verification through an RPC and are rejected for now.
 
 ## Client helpers

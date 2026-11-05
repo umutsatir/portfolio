@@ -1,7 +1,7 @@
 import { P, css } from "../lib/ui";
 import { EMAIL } from "../data/site";
 import { NOTE_MAX } from "../../shared/signMessage";
-import { shortAddress } from "../lib/signatures";
+import { noteAllowed, shortAddress } from "../lib/signatures";
 import { deepLink, directoryEnabled, fetchDirectory, type DirWallet, type WalletOption } from "../lib/wallet";
 import { useEffect, useState } from "react";
 import type { Project } from "../data/work";
@@ -87,8 +87,9 @@ export function WalletModal(p: WalletModalProps) {
             ADD A NOTE (OPTIONAL, SHOWN ON YOUR BALL)
             <input value={p.note} maxLength={NOTE_MAX} onChange={(e) => p.onNote(e.target.value)} placeholder="gm. ship it." style={css("display:block;box-sizing:border-box;width:100%;margin-top:8px;padding:12px 14px;border:3px solid #111;border-radius:14px;background:#fff;font:500 15px 'DM Sans',sans-serif;color:#111;outline:0")} />
           </label>
+          {!noteAllowed(p.note) && <Err text="That note contains words that aren't allowed here. Please keep it friendly." />}
           <div style={css(`margin:10px 0 16px;font:500 12px 'JetBrains Mono',monospace;opacity:.7`)}>signing as {p.address ? shortAddress(p.address) : ""} · free, no gas</div>
-          <button disabled={p.busy} onClick={p.onSign} style={css(`cursor:pointer;width:100%;padding:16px;background:#111;color:#ffe680;border:3px solid #111;border-radius:99px;font:800 18px Syne,sans-serif;opacity:${p.busy ? 0.7 : 1}`)}>
+          <button disabled={p.busy || !noteAllowed(p.note)} onClick={p.onSign} style={css(`cursor:pointer;width:100%;padding:16px;background:#111;color:#ffe680;border:3px solid #111;border-radius:99px;font:800 18px Syne,sans-serif;opacity:${p.busy || !noteAllowed(p.note) ? 0.5 : 1}`)}>
             {p.busy ? "Waiting for your wallet…" : "Sign (free, no gas)"}
           </button>
           {p.error && <Err text={p.error} />}

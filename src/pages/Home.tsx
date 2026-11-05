@@ -146,7 +146,7 @@ export default function Home() {
               href={"#" + id}
               onClick={goTo(id)}
               className="rise-t"
-              style={css(`--i:${i};--s:60ms;display:flex;align-items:center;gap:14px;padding:16px 22px;background:${active === id ? "#ffe680" : "#fff"};border:3px solid #111;border-radius:22px;box-shadow:5px 5px 0 #111;font:800 clamp(22px,7.2vw,32px) Syne,sans-serif;letter-spacing:-.03em;rotate:${[-1.5, 1, -1, 1.5][i]}deg`)}
+              style={css(`--i:${i};--s:60ms;display:flex;align-items:center;gap:10px;padding:16px 18px;background:${active === id ? "#ffe680" : "#fff"};border:3px solid #111;border-radius:22px;box-shadow:5px 5px 0 #111;font:800 clamp(19px,5.8vw,30px) Syne,sans-serif;letter-spacing:-.03em;rotate:${[-1.5, 1, -1, 1.5][i]}deg`)}
             >
               <span style={css(`font:700 13px ${MONO};letter-spacing:0;opacity:.6`)}>{String(i + 1).padStart(2, "0")}</span>
               <span style={css("flex:1")}>{label}</span>
@@ -154,7 +154,7 @@ export default function Home() {
             </a>
           ))}
           <div className="rise-t" style={css("--i:4;--s:60ms;display:flex;flex-wrap:wrap;gap:12px;margin-top:10px")}>
-            <a href={BLOG_URL} style={css("flex:1 1 130px;text-align:center;padding:14px 18px;background:#111;color:#fff;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #ffe680;font:700 16px 'DM Sans',sans-serif")}>
+            <a href={BLOG_URL} style={css("flex:1 1 130px;display:flex;align-items:center;justify-content:center;text-align:center;min-height:60px;padding:14px 18px;box-sizing:border-box;background:#111;color:#fff;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #ffe680;font:700 16px 'DM Sans',sans-serif")}>
               Blog ↗
             </a>
             <button
@@ -163,7 +163,7 @@ export default function Home() {
                 setModal("wallet");
                 setStep(done ? 2 : 0);
               }}
-              style={css("flex:1 1 130px;cursor:pointer;padding:14px 18px;background:#ffe680;color:#111;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #111;font:700 16px 'DM Sans',sans-serif")}
+              style={css("flex:1 1 130px;cursor:pointer;min-height:60px;padding:14px 18px;box-sizing:border-box;background:#ffe680;color:#111;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #111;font:700 16px 'DM Sans',sans-serif")}
             >
               {done ? "Connected ✓" : "Connect wallet"}
             </button>
@@ -257,7 +257,7 @@ export default function Home() {
             <div style={css("margin-top:18px;font:800 clamp(22px,2.4vw,34px)/1.7 Syne,sans-serif;letter-spacing:-.03em")}>
               {aboutWords.map((w, i) => (
                 <span key={w.t}>
-                  {w.pre}
+                  {w.pre.replace(/^([.,:])/, "\u2060$1")}
                   <span
                     onMouseEnter={() => setAh(i)}
                     style={css(
@@ -278,7 +278,7 @@ export default function Home() {
             </div>
           </div>
           <div style={css("display:flex;justify-content:center;min-width:0;padding-top:70px")}>
-            <div {...P("position:relative;width:min(100%,330px);transform-origin:50% 0;animation:swing 3.6s ease-in-out infinite alternate", { h: "animation-play-state:paused" })}>
+            <div {...P("position:relative;width:min(100%,330px);transform-origin:50% 0;animation:swing 3.6s ease-in-out infinite alternate", { h: "animation-play-state:paused" }, "idcard")}>
               <div style={css("width:44px;height:90px;margin:-90px auto 0;background:#111;border-radius:0 0 8px 8px")} />
               <div style={css("width:64px;height:26px;margin:-4px auto 0;background:#fffbea;border:3px solid #111;border-radius:12px 12px 0 0;position:relative;z-index:2")} />
               <div style={css("margin-top:-3px;background:#fffbea;border:3px solid #111;border-radius:28px;box-shadow:9px 10px 0 #111;overflow:hidden")}>
@@ -299,7 +299,7 @@ export default function Home() {
                       node101
                     </a>
                   </div>
-                  <div style={css("margin-top:16px;padding-top:14px;border-top:2px dashed rgba(17,17,17,.4);font:500 13px/2 'JetBrains Mono',monospace")}>
+                  <div className="idcard-kv" style={css("margin-top:16px;padding-top:14px;border-top:2px dashed rgba(17,17,17,.4);font:500 13px/2 'JetBrains Mono',monospace")}>
                     {kv.map((r) => (
                       <div key={r.k} style={css("display:flex;gap:12px")}>
                         <span style={css("flex:0 0 78px;color:#6d3fd6;font-weight:700")}>{r.k}</span>
@@ -452,7 +452,7 @@ export default function Home() {
                   <div style={css("font:800 clamp(22px,2.4vw,32px)/1.05 Syne,sans-serif;letter-spacing:-.03em")}>{e.title}</div>
                   <p style={css("margin:8px 0 0;max-width:660px;font-size:16px;line-height:1.55")}>{e.desc}</p>
                 </div>
-                <div style={css(`align-self:start;padding:5px 12px;border:2px solid #111;border-radius:99px;font:700 11px ${MONO};text-transform:uppercase;letter-spacing:.06em;background:${e.tagBg}`)}>{e.tag}</div>
+                <div style={css(`align-self:start;padding:5px 12px;border:2px solid #111;border-radius:99px;font:700 11px ${MONO};text-transform:uppercase;letter-spacing:.06em;background:${e.tagBg}`)} className="tl-tag">{e.tag}</div>
               </div>
             ))}
           </div>
@@ -460,7 +460,7 @@ export default function Home() {
       </section>
 
       <section id="contact" style={css("padding:0 clamp(18px,4vw,52px) 80px;max-width:1380px;margin:0 auto")}>
-        <div data-reveal style={css("padding:clamp(30px,6vw,80px);background:#fff;border:3px solid #111;border-radius:36px;box-shadow:10px 10px 0 #111")}>
+        <div data-reveal className="c-card" style={css("padding:clamp(30px,6vw,80px);background:#fff;border:3px solid #111;border-radius:36px;box-shadow:10px 10px 0 #111")}>
           <div style={css(`font:700 13px ${MONO};text-transform:uppercase;letter-spacing:.08em`)}>{"/ contact · replies < 24h, usually < 2h"}</div>
           <div className="c-h" style={css("margin-top:12px;font:800 clamp(44px,8vw,128px)/.92 Syne,sans-serif;letter-spacing:-.05em")}>
             Got a hard problem?

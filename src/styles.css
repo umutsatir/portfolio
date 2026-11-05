@@ -1,0 +1,20 @@
+html{color-scheme:light}
+html{scroll-behavior:smooth}
+body{margin:0;background:#d9ccff;color:#111;font-family:'DM Sans',sans-serif}
+html[data-app=blog] body{background:#fff}
+a{color:inherit;text-decoration:none}
+::selection{background:#111;color:#ffe680}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes bob1{50%{transform:translateY(-12px) rotate(-5deg)}}
+@keyframes bob2{50%{transform:translateY(-12px) rotate(6deg)}}
+@keyframes bob3{50%{transform:translateY(-10px) rotate(-3deg)}}
+@keyframes blink{50%{opacity:.25}}
+@keyframes swing{from{rotate:-4deg}to{rotate:4deg}}
+@keyframes abA{from{opacity:0;scale:.95;translate:0 10px}to{opacity:1;scale:1;translate:0 0}}
+@keyframes abB{from{opacity:0;scale:.95;translate:0 10px}to{opacity:1;scale:1;translate:0 0}}
+@keyframes stA{from{transform:translateY(34px) scale(.4);opacity:0}to{transform:none;opacity:1}}
+@keyframes stB{from{transform:translateY(34px) scale(.4);opacity:0}to{transform:none;opacity:1}}
+/* blog */
+html[data-app=blog] a:hover{color:inherit}
+input::placeholder{color:#111;opacity:.5}

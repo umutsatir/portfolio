@@ -1,0 +1,25 @@
+---
+title: "Unconstrained is not free"
+hl: "not free"
+tag: "ZK / Noir"
+essay: true
+mins: 9
+date: 2026-10-14
+tldr: "If you didn’t constrain it, the prover can lie. Every hint needs an assert right after it."
+excerpt: "In Noir an unconstrained function is a hint, not a proof. If you did not constrain it, the prover can lie."
+---
+
+## Hints are not proofs
+
+In Noir, anything computed inside an unconstrained function is a hint, not a proof. It is great for speed, because the heavy work happens outside the circuit, but the circuit itself still has to check the result.
+
+```noir
+unconstrained fn div_hint(a: Field, b: Field) -> Field { a / b }
+
+let q = div_hint(a, b);
+assert(q * b == a);   // the actual constraint
+```
+
+## The rule I follow now
+
+Every time I use a hint, the very next line is an assert that checks it. If I can’t write that assert, the hint is hiding a missing constraint, and that is exactly where a malicious prover would step in.

@@ -1,0 +1,22 @@
+---
+title: "Reentrancy moved, it didn’t die"
+hl: "didn’t die"
+tag: "Security"
+essay: false
+mins: 3
+date: 2026-10-28
+tldr: "Checks, effects, interactions. Every time."
+excerpt: "Cross-function and read-only reentrancy are the ones that still bite. Update state before any external call."
+---
+
+The classic single-function reentrancy is easy to spot now. The one that still bites is cross-function and read-only reentrancy: a view function returns stale state while another contract is mid-call.
+
+My rule: update state before any external call, and treat every view another protocol might read as part of your attack surface.
+
+```solidity
+function withdraw(uint amt) external {
+    balances[msg.sender] -= amt;   // effects first
+    (bool ok,) = msg.sender.call{value: amt}("");
+    require(ok);
+}
+```

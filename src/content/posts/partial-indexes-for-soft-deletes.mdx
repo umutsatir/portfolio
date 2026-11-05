@@ -1,0 +1,18 @@
+---
+title: "Partial indexes for soft deletes"
+hl: "soft deletes"
+tag: "Backend"
+essay: false
+mins: 3
+date: 2026-07-02
+tldr: "Unique only where it matters."
+excerpt: "Let a soft-deleted row stop blocking a new one with the same email."
+---
+
+Soft-deleted rows should not block a new row with the same email. A partial unique index does exactly that.
+
+```sql
+CREATE UNIQUE INDEX users_email_live
+ON users (email)
+WHERE deleted_at IS NULL;
+```

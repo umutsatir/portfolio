@@ -30,12 +30,53 @@ export async function listWallets(): Promise<WalletOption[]> {
   return [...browser, ...(wc ? [{ id: wc.id, name: "WalletConnect", kind: "walletconnect" as const, connector: wc }] : [])];
 }
 
+async function toConnected(connector: Connector, address: string): Promise<Connected> {
+  const { config } = await wagmi();
+  const { disconnect, signMessage } = await core();
+  return {
+    address,
+    connector,
+    sign: (message) => signMessage(config, { connector, account: address as `0x${string}`, message }),
+    disconnect: () => disconnect(config, { connector }),
+  };
+}
+
+/** wagmi keeps the last connector id here; no key means nobody connected before, so we don't even load wagmi. */
+const hasPrevious = () => {
+  try {
+    return !!localStorage.getItem("wagmi.recentConnectorId");
+  } catch {
+    return false;
+  }
+};
+
+/** After a refresh: bring the previous wallet connection back (null when there is none or it is gone). */
+export async function restoreWallet(): Promise<Connected | null> {
+  if (!hasPrevious()) return null;
+  try {
+    const { config } = await wagmi();
+    const { reconnect, getAccount } = await core();
+    await reconnect(config);
+    const a = getAccount(config);
+    return a.status === "connected" && a.address && a.connector ? await toConnected(a.connector, a.address) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Notifies when the wallet itself disconnects or switches account. Returns the unsubscribe function. */
+export async function watchWallet(cb: (address: string | null) => void): Promise<() => void> {
+  const { config } = await wagmi();
+  const { watchAccount } = await core();
+  return watchAccount(config, { onChange: (a) => cb(a.status === "connected" && a.address ? a.address : null) });
+}
+
 /**
  * Connect a wallet. For WalletConnect, `onUri` receives the pairing URI so our own UI can show the QR code.
  */
 export async function connectWallet(w: WalletOption, onUri?: (uri: string) => void): Promise<Connected> {
   const { config } = await wagmi();
-  const { connect, disconnect, signMessage } = await core();
+  const { connect } = await core();
 
   let off: (() => void) | undefined;
   if (w.kind === "walletconnect" && onUri) {
@@ -49,12 +90,7 @@ export async function connectWallet(w: WalletOption, onUri?: (uri: string) => vo
     const res = await connect(config, { connector: w.connector });
     const address = res.accounts[0];
     if (!address) throw new Error("no_account");
-    return {
-      address,
-      connector: w.connector,
-      sign: (message) => signMessage(config, { connector: w.connector, account: address, message }),
-      disconnect: () => disconnect(config, { connector: w.connector }),
-    };
+    return await toConnected(w.connector, address);
   } finally {
     off?.();
   }

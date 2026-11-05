@@ -7,7 +7,7 @@ import { EMAIL, aboutWords, kv, links, navTabs, timeline } from "../data/site";
 import { CaseModal, WalletModal } from "../components/Modals";
 import SignaturePool, { type PoolStatus } from "../components/SignaturePool";
 import { fetchSignatures, isSigned, signAndSubmit, type Signer } from "../lib/signatures";
-import { cancelConnect, connectWallet, explain, listWallets, type Connected, type DirWallet, type WalletOption } from "../lib/wallet";
+import { cancelConnect, connectWallet, explain, listWallets, restoreWallet, watchWallet, type Connected, type DirWallet, type WalletOption } from "../lib/wallet";
 
 const SPRING = "cubic-bezier(.34,1.56,.64,1)";
 const MONO = "'JetBrains Mono',monospace";
@@ -51,6 +51,59 @@ export default function Home() {
     loadPool();
   }, [loadPool]);
 
+  // a wallet connected earlier comes back after a refresh; if it already signed, go straight to the "on the wall" state
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const c = await restoreWallet();
+      if (!live || !c) return;
+      setAccount(c);
+      if (await isSigned(c.address)) {
+        if (!live) return;
+        setAlready(true);
+        setDone(true);
+      }
+    })();
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  // the wallet itself can disconnect or switch account while the page is open
+  const addr = account?.address;
+  useEffect(() => {
+    if (!addr) return;
+    let off: (() => void) | undefined;
+    let live = true;
+    watchWallet(async (next) => {
+      if (!next) {
+        setAccount(null);
+        setDone(false);
+        setAlready(false);
+      } else if (next.toLowerCase() !== addr.toLowerCase()) {
+        const c = await restoreWallet();
+        if (!c) return;
+        setAccount(c);
+        const signed = await isSigned(c.address);
+        setAlready(signed);
+        setDone(signed);
+      }
+    }).then((o) => (live ? (off = o) : o()));
+    return () => {
+      live = false;
+      off?.();
+    };
+  }, [addr]);
+
+  const disconnectWallet = () => {
+    account?.disconnect().catch(() => {});
+    setAccount(null);
+    setDone(false);
+    setAlready(false);
+    setNote("");
+    setStep(0);
+  };
+
   const openWallet = () => {
     setError("");
     setModal("wallet");
@@ -76,10 +129,10 @@ export default function Home() {
       if (id !== attempt.current) return void c.disconnect().catch(() => {}); // visitor went back meanwhile
       if (await isSigned(c.address)) {
         if (id !== attempt.current) return void c.disconnect().catch(() => {});
+        setAccount(c);
         setAlready(true);
         setDone(true);
         setStep(2);
-        c.disconnect().catch(() => {});
         return;
       }
       if (id !== attempt.current) return void c.disconnect().catch(() => {});
@@ -117,8 +170,6 @@ export default function Home() {
       setAlready(!r.created);
       setDone(true);
       setStep(2);
-      account.disconnect().catch(() => {}); // the signature is all we needed
-      setAccount(null);
       if (r.created) loadPool();
     } catch (e) {
       setError(explain(e));
@@ -223,7 +274,7 @@ export default function Home() {
               { h: "background:#fff;transform:rotate(-2deg) scale(1.08);box-shadow:6px 7px 0 #111" },
             )}
           >
-            {done ? "Connected ✓" : "Connect wallet"}
+            {account || done ? "Connected ✓" : "Connect wallet"}
           </button>
         </div>
         <button
@@ -267,7 +318,7 @@ export default function Home() {
               }}
               style={css("flex:1 1 130px;cursor:pointer;min-height:60px;padding:14px 18px;box-sizing:border-box;background:#ffe680;color:#111;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #111;font:700 16px 'DM Sans',sans-serif")}
             >
-              {done ? "Connected ✓" : "Connect wallet"}
+              {account || done ? "Connected ✓" : "Connect wallet"}
             </button>
           </div>
         </div>
@@ -596,7 +647,7 @@ export default function Home() {
       {modal && (
         <div onClick={() => setModal(null)} style={css("position:fixed;inset:0;z-index:2000;background:rgba(26,11,59,.6);display:grid;place-items:center;padding:20px;overflow:auto;overscroll-behavior:contain")}>
           {modal === "wallet" && (
-            <WalletModal step={step} wallets={wallets} wcUri={wcUri} onBack={back} dirWallet={dirWallet} onPickDir={pickDir} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDone={() => setModal(null)} />
+            <WalletModal step={step} wallets={wallets} wcUri={wcUri} onBack={back} dirWallet={dirWallet} onPickDir={pickDir} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDisconnect={disconnectWallet} onDone={() => setModal(null)} />
           )}
           {modal === "case" && <CaseModal p={projects[ci]} onClose={() => setModal(null)} />}
         </div>

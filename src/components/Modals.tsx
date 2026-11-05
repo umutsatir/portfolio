@@ -26,6 +26,7 @@ export type WalletModalProps = {
   onBack: () => void;
   onNote: (v: string) => void;
   onSign: () => void;
+  onDisconnect: () => void;
   onDone: () => void;
 };
 
@@ -93,6 +94,7 @@ export function WalletModal(p: WalletModalProps) {
             {p.busy ? "Waiting for your wallet…" : "Sign (free, no gas)"}
           </button>
           {p.error && <Err text={p.error} />}
+          <button onClick={p.onDisconnect} style={css("cursor:pointer;margin-top:16px;padding:0;background:none;border:0;border-bottom:2px solid #111;font:700 13px 'DM Sans',sans-serif;color:#111")}>Disconnect {p.address ? shortAddress(p.address) : "wallet"}</button>
         </div>
       )}
       {p.step === 2 && (
@@ -109,6 +111,7 @@ export function WalletModal(p: WalletModalProps) {
             <a href="https://twitter.com/umut_satir" target="_blank" style={css("flex:1;text-align:center;padding:12px;background:#b5efcf;border:3px solid #111;border-radius:14px;font-weight:700")}>X</a>
             <a href="https://t.me/umutsatir" target="_blank" style={css("flex:1;text-align:center;padding:12px;background:#d9ccff;border:3px solid #111;border-radius:14px;font-weight:700")}>Telegram</a>
           </div>
+          <button onClick={p.onDisconnect} style={css("cursor:pointer;margin-top:16px;padding:0;background:none;border:0;border-bottom:2px solid #111;font:700 13px 'DM Sans',sans-serif;color:#111")}>Disconnect {p.address ? shortAddress(p.address) : "wallet"}</button>
         </div>
       )}
     </div>

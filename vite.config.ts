@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import mdx from "@mdx-js/rollup";
+import rehypeShiki from "@shikijs/rehype";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 
@@ -51,6 +52,8 @@ export default defineConfig({
       enforce: "pre",
       ...mdx({
         remarkPlugins: [remarkFrontmatter, [remarkMdxFrontmatter, { name: "frontmatter" }]],
+        // Code blocks are highlighted at build time from the fence language (```solidity). Noir has no bundled grammar; it reads like Rust.
+        rehypePlugins: [[rehypeShiki, { theme: "tokyo-night", langAlias: { noir: "rust" }, addLanguageClass: true, fallbackLanguage: "text" }]],
         providerImportSource: undefined,
       }),
     },

@@ -8,11 +8,22 @@ import { injected, walletConnect } from "@wagmi/connectors";
  */
 export const WC_PROJECT_ID = import.meta.env.WALLETCONNECT_PROJECT_ID as string | undefined;
 
+function safeStorage() {
+  try {
+    const k = "__wagmi_probe";
+    window.localStorage.setItem(k, "1");
+    window.localStorage.removeItem(k);
+    return window.localStorage;
+  } catch {
+    return noopStorage;
+  }
+}
+
 export const config = createConfig({
   chains: [mainnet],
   transports: { [mainnet.id]: http() },
-  // we only need a signature, so don't restore sessions across visits
-  storage: createStorage({ storage: noopStorage }),
+  // the connection survives a refresh (restored by restoreWallet); falls back to memory-only where localStorage is blocked
+  storage: createStorage({ storage: safeStorage() }),
   multiInjectedProviderDiscovery: true, // EIP-6963: every installed wallet shows up as its own connector
   connectors: [
     injected(), // fallback for wallets that only expose window.ethereum

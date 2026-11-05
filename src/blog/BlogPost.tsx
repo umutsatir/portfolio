@@ -4,31 +4,18 @@ import * as htmlToImage from "html-to-image";
 import { P, css } from "../lib/ui";
 import { BLOG_BASENAME } from "../lib/config";
 import { MONTHS_SHORT, posts, tagColor } from "./posts";
-import { highlight } from "./highlight";
 import { Paper } from "./Layout";
 
 const MONO = "'JetBrains Mono',monospace";
 
-function textOf(n: ReactNode): string {
-  if (typeof n === "string") return n;
-  if (Array.isArray(n)) return n.map(textOf).join("");
-  return "";
-}
-
 function Pre({ children }: ComponentProps<"pre">) {
+  // @shikijs/rehype already turned the code into coloured <span class="line"> elements at build time
   const el = children as React.ReactElement<{ className?: string; children?: ReactNode }>;
-  const lang = /language-(\w+)/.exec(el.props.className || "")?.[1] || "code";
-  const lines = textOf(el.props.children).replace(/\n$/, "").split("\n");
+  const lang = /language-([\w-]+)/.exec(el.props.className || "")?.[1] || "code";
   return (
     <div style={css("position:relative;margin-top:22px;padding:34px 22px 18px;background:#111;border-radius:16px;font:500 14px/1.85 'JetBrains Mono',monospace;overflow:auto;color:#f3efff")}>
       <span style={css(`position:absolute;top:10px;right:14px;padding:2px 10px;background:#ffe680;color:#111;border-radius:99px;font:700 10.5px ${MONO};letter-spacing:.08em;text-transform:uppercase`)}>{lang}</span>
-      {highlight(lines, lang).map((toks, i) => (
-        <div key={i} style={css("white-space:pre;min-height:1.85em")}>
-          {toks.map((k, j) => (
-            <span key={j} style={{ color: k.c }}>{k.t}</span>
-          ))}
-        </div>
-      ))}
+      <code className="shiki-code">{el.props.children}</code>
     </div>
   );
 }

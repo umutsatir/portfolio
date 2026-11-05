@@ -103,3 +103,5 @@ html[data-app=blog] input::placeholder{color:var(--ink)}
   .idcard{width:min(80%,290px)!important}
   .idcard-kv{font-size:11.5px!important}
 }
+.shiki-code{font:inherit;background:none;padding:0;white-space:pre}
+.shiki-code .line{display:block;min-height:1.85em}

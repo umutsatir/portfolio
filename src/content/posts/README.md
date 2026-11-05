@@ -82,7 +82,7 @@ function withdraw(uint amt) external {
 ```
 ````
 
-Syntax colours exist for `solidity`, `noir` and `sql`. Any other language name (for example `ts`) still renders the card with its badge, just without colours. To add a language, extend `KW` and `TY` in `src/blog/highlight.ts`.
+Highlighting is automatic (Shiki, at build time) and comes from the language after the opening fence. Any language Shiki knows works (`solidity`, `ts`, `sql`, `rust`, `bash`, …). `noir` is rendered with the Rust grammar since Shiki has no Noir one. Unknown names fall back to plain text. The badge shows whatever you wrote after the fence.
 
 ### Not supported yet
 

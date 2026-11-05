@@ -37,6 +37,10 @@ Paragraph. Fenced blocks (```solidity / noir / sql) get the design's code card.
 
 Sticky notes / cite / highlight / PNG capture on post pages is the design's `blog-tools.js`, unchanged.
 
+## Signature wall
+
+Wallet signatures are verified by `api/sign.ts` and stored in Supabase. Setup, env vars, moderation: see `supabase/README.md`.
+
 ## Dev
 
 ```

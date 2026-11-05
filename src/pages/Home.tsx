@@ -29,7 +29,7 @@ export default function Home() {
   // Sticker collage scale: continuous with the viewport; on phones it fills the width under the copy (CSS reads --hz)
   useEffect(() => {
     const set = () =>
-      document.documentElement.style.setProperty("--hz", String(innerWidth < 520 ? (innerWidth - 36) / 600 : Math.min(0.8, innerWidth / 1667)));
+      document.documentElement.style.setProperty("--hz", String(innerWidth < 520 ? (innerWidth - 36) / 600 : Math.min(0.8, innerWidth / 1450)));
     set();
     addEventListener("resize", set);
     return () => removeEventListener("resize", set);

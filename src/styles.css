@@ -57,14 +57,16 @@ html[data-app=blog] input::placeholder{color:var(--ink)}
   .hero-art{grid-area:art;width:600px;height:430px;min-height:0;zoom:var(--hz,.5);margin-top:18px}
 }
 
-/* phones */
+/* compact header (hamburger) wherever the desktop header no longer fits; hero stops centring in a tall box */
 .hdr-menu{display:none!important}
-@media (max-width:720px){
+@media (max-width:1019px){
   .hdr-nav,.hdr-right{display:none!important}
   .hdr-menu{display:flex!important}
   .hdr{padding:12px 14px!important;align-items:center!important}
   .hdr>a{padding:6px 14px!important;font-size:19px!important}
-  .hero{padding-top:110px!important;padding-bottom:60px!important}
+}
+@media (max-width:1343px){
+  .hero{min-height:0!important;align-content:start!important;padding-top:120px!important;padding-bottom:70px!important}
 }
 @media (max-width:519px){
   .hero-art{width:600px;height:430px;min-height:0;zoom:var(--hz,.59);margin-top:10px}

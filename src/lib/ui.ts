@@ -74,7 +74,7 @@ export type Pseudo = { h?: string; a?: string };
 
 /** `style` + optional hover/active strings -> props for an element. */
 export function P(base: string, pseudo: Pseudo = {}, extra = ""): { style: CSSProperties; className?: string } {
-  const cls = [extra, pseudo.h && pseudoClass("hover", pseudo.h), pseudo.a && pseudoClass("active", pseudo.a)]
+  const cls = [extra, pseudo.a && "no-press", pseudo.h && pseudoClass("hover", pseudo.h), pseudo.a && pseudoClass("active", pseudo.a)]
     .filter(Boolean)
     .join(" ");
   return cls ? { style: css(base), className: cls } : { style: css(base) };

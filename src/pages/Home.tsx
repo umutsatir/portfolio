@@ -7,7 +7,7 @@ import { EMAIL, aboutWords, kv, links, navTabs, timeline } from "../data/site";
 import { CaseModal, WalletModal } from "../components/Modals";
 import SignaturePool, { type PoolStatus } from "../components/SignaturePool";
 import { fetchSignatures, signAndSubmit, type Signer } from "../lib/signatures";
-import { cancelConnect, connectWallet, explain, listWallets, type Connected, type WalletOption } from "../lib/wallet";
+import { cancelConnect, connectWallet, explain, listWallets, type Connected, type DirWallet, type WalletOption } from "../lib/wallet";
 
 const SPRING = "cubic-bezier(.34,1.56,.64,1)";
 const MONO = "'JetBrains Mono',monospace";
@@ -31,6 +31,7 @@ export default function Home() {
   const [wallets, setWallets] = useState<WalletOption[] | null>(null);
   const [account, setAccount] = useState<Connected | null>(null);
   const [wcUri, setWcUri] = useState<string | null>(null);
+  const [dirWallet, setDirWallet] = useState<DirWallet | null>(null);
   const picked = useRef<WalletOption | null>(null);
   const attempt = useRef(0);
   const [note, setNote] = useState("");
@@ -84,6 +85,13 @@ export default function Home() {
     } finally {
       if (id === attempt.current) setBusy(false);
     }
+  };
+  // any wallet from the directory (or "any other"): pair over WalletConnect
+  const pickDir = (dw: DirWallet | null) => {
+    const wc = wallets?.find((w) => w.kind === "walletconnect");
+    if (!wc) return;
+    setDirWallet(dw);
+    void pick(wc);
   };
   const back = () => {
     attempt.current++;
@@ -579,7 +587,7 @@ export default function Home() {
       {modal && (
         <div onClick={() => setModal(null)} style={css("position:fixed;inset:0;z-index:2000;background:rgba(26,11,59,.6);display:grid;place-items:center;padding:20px;overflow:auto;overscroll-behavior:contain")}>
           {modal === "wallet" && (
-            <WalletModal step={step} wallets={wallets} wcUri={wcUri} onBack={back} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDone={() => setModal(null)} />
+            <WalletModal step={step} wallets={wallets} wcUri={wcUri} onBack={back} dirWallet={dirWallet} onPickDir={pickDir} address={account?.address ?? null} note={note} busy={busy} error={error} alreadySigned={already} onPick={pick} onNote={setNote} onSign={sign} onDone={() => setModal(null)} />
           )}
           {modal === "case" && <CaseModal p={projects[ci]} onClose={() => setModal(null)} />}
         </div>

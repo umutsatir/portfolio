@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { P, css } from "../lib/ui";
 import { signerName, timeAgo, type Signer } from "../lib/signatures";
 
@@ -21,6 +21,24 @@ function look(seedStr: string): Look {
     [0, 1, 2, 1, 0].forEach((k) => cells.push(row[k]));
   }
   return { bg: PALETTE[seed % 6], d: 56 + ((seed >>> 3) % 4) * 10, cells };
+}
+
+/** ENS avatar from the official ENS metadata service (it resolves ipfs / NFT avatars for us). Falls back to the identicon. */
+function EnsAvatar({ name }: { name: string }) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <img
+      src={`https://metadata.ens.domains/mainnet/avatar/${encodeURIComponent(name)}`}
+      alt=""
+      referrerPolicy="no-referrer"
+      draggable={false}
+      onLoad={() => setLoaded(true)}
+      onError={() => setFailed(true)}
+      style={css(`position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;pointer-events:none;opacity:${loaded ? 1 : 0};transition:opacity .35s ease`)}
+    />
+  );
 }
 
 type Body = { r: number; x: number; y: number; vx: number; vy: number };
@@ -256,13 +274,14 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
                 data-name={signerName(s)}
                 data-note={s.note ?? ""}
                 data-time={timeAgo(s.signed_at)}
-                style={css(`position:absolute;left:0;top:0;z-index:1;width:${l.d}px;height:${l.d}px;box-sizing:border-box;border-radius:50%;background:${l.bg};border:3px solid #111;box-shadow:2px 3px 0 #111;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none;will-change:transform`)}
+                style={css(`position:absolute;left:0;top:0;z-index:1;width:${l.d}px;height:${l.d}px;box-sizing:border-box;border-radius:50%;background:${l.bg};border:3px solid #111;box-shadow:2px 3px 0 #111;overflow:hidden;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none;will-change:transform`)}
               >
                 <div style={css("pointer-events:none;display:grid;grid-template-columns:repeat(5,1fr);width:46%;height:46%;border-radius:6px;overflow:hidden")}>
                   {l.cells.map((on, i) => (
                     <i key={i} style={{ background: on ? "#111" : "transparent" }} />
                   ))}
                 </div>
+                {s.ens && <EnsAvatar name={s.ens} />}
               </div>
             );
           })}

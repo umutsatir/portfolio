@@ -2,7 +2,7 @@ import { P, css } from "../lib/ui";
 import { EMAIL } from "../data/site";
 import { NOTE_MAX } from "../../shared/signMessage";
 import { shortAddress } from "../lib/signatures";
-import type { WalletOption } from "../lib/wallet";
+import { deepLink, directoryEnabled, fetchDirectory, type DirWallet, type WalletOption } from "../lib/wallet";
 import { useEffect, useState } from "react";
 import type { Project } from "../data/work";
 
@@ -20,7 +20,9 @@ export type WalletModalProps = {
   busy: boolean;
   error: string;
   alreadySigned: boolean;
-  onPick: (w: WalletOption) => void;
+  dirWallet: DirWallet | null; // wallet chosen from the directory (null = "any other wallet")
+  onPick: (w: WalletOption) => void; // wallet installed in this browser
+  onPickDir: (w: DirWallet | null) => void; // any wallet, via WalletConnect
   onBack: () => void;
   onNote: (v: string) => void;
   onSign: () => void;
@@ -30,41 +32,46 @@ export type WalletModalProps = {
 export function WalletModal(p: WalletModalProps) {
   const title = "font:800 32px/1 Syne,sans-serif;letter-spacing:-.03em";
   return (
-    <div onClick={stop} style={css("width:min(440px,100%);padding:30px;background:#fff;border:3px solid #111;border-radius:30px;box-shadow:10px 10px 0 #111;animation:pop .25s ease-out;box-sizing:border-box")}>
+    <div onClick={stop} style={css("width:min(480px,100%);max-height:92vh;overflow-y:auto;padding:28px;background:#fff;border:3px solid #111;border-radius:30px;box-shadow:10px 10px 0 #111;animation:pop .25s ease-out;box-sizing:border-box")}>
       {p.step === 0 && (
         <div>
           <div style={css(title)}>Connect wallet</div>
-          <p style={css("margin:10px 0 20px;font-size:15px;line-height:1.5")}>Pick a wallet from this browser. You only sign a message: no gas, no transaction.</p>
-          {p.wallets === null && <div style={css("padding:16px;font:500 14px 'JetBrains Mono',monospace")}>looking for wallets…</div>}
-          {p.wallets?.length === 0 && (
-            <div style={css("padding:16px;background:#f3efff;border:3px dashed #111;border-radius:16px;font:500 14px/1.5 'JetBrains Mono',monospace")}>
-              No wallet found in this browser. Install MetaMask, Rabby or similar, then reload.
-            </div>
+          <p style={css("margin:10px 0 18px;font-size:15px;line-height:1.5")}>Any Ethereum wallet works. You only sign a message: no gas, no transaction.</p>
+          {p.wallets === null && <div style={css("padding:8px 0 16px;font:500 14px 'JetBrains Mono',monospace")}>looking for wallets…</div>}
+          {!!p.wallets?.filter((w) => w.kind === "injected").length && (
+            <>
+              <div style={css(`font:700 11px ${MONO};letter-spacing:.08em;margin-bottom:10px`)}>INSTALLED IN THIS BROWSER</div>
+              {p.wallets
+                .filter((w) => w.kind === "injected")
+                .map((w, i) => (
+                  <button key={w.id} disabled={p.busy} onClick={() => p.onPick(w)} style={css(`cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:10px;padding:12px 16px;background:${WALLET_BG[i % WALLET_BG.length]};border:3px solid #111;border-radius:18px;font:700 17px 'DM Sans',sans-serif;color:#111;text-align:left;opacity:${p.busy ? 0.6 : 1}`)}>
+                    {w.icon ? <img src={w.icon} alt="" width={28} height={28} style={css("border-radius:7px;flex:none")} /> : <span style={css("flex:none;display:grid;place-items:center;width:28px;height:28px;background:#111;color:#ffe680;border-radius:7px;font:800 12px Syne,sans-serif")}>◎</span>}
+                    <span style={css("flex:1")}>{w.name}</span>
+                    <span>→</span>
+                  </button>
+                ))}
+            </>
           )}
-          {p.wallets?.map((w, i) => (
-            <button key={w.id} disabled={p.busy} onClick={() => p.onPick(w)} style={css(`cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:12px;padding:14px 18px;background:${WALLET_BG[i % WALLET_BG.length]};border:3px solid #111;border-radius:18px;font:700 17px 'DM Sans',sans-serif;color:#111;text-align:left;opacity:${p.busy ? 0.6 : 1}`)}>
-              {w.icon ? (
-                <img src={w.icon} alt="" width={26} height={26} style={css("border-radius:6px;flex:none")} />
-              ) : (
-                <span style={css("flex:none;display:grid;place-items:center;width:26px;height:26px;background:#111;color:#ffe680;border-radius:6px;font:800 11px Syne,sans-serif")}>{w.kind === "walletconnect" ? "WC" : "◎"}</span>
-              )}
-              <span style={css("flex:1")}>{w.name}</span>
-              <span>→</span>
-            </button>
-          ))}
+          {directoryEnabled && p.wallets && p.wallets.some((w) => w.kind === "walletconnect") ? (
+            <WalletDirectory installed={p.wallets.filter((w) => w.kind === "injected").map((w) => w.name.toLowerCase())} busy={p.busy} onPick={p.onPickDir} />
+          ) : (
+            p.wallets?.length === 0 && (
+              <div style={css("padding:16px;background:#f3efff;border:3px dashed #111;border-radius:16px;font:500 14px/1.5 'JetBrains Mono',monospace")}>No wallet found in this browser. Install one (MetaMask, Rabby…) and reload.</div>
+            )
+          )}
           {p.error && <Err text={p.error} />}
         </div>
       )}
       {p.step === 3 && (
         <div>
-          <div style={css(title)}>Scan with your wallet</div>
-          <p style={css("margin:10px 0 16px;font-size:15px;line-height:1.5")}>Open your wallet app, scan the code and approve the connection. You'll only sign a message.</p>
+          <div style={css(title)}>{p.dirWallet ? `Open ${p.dirWallet.name}` : "Scan with your wallet"}</div>
+          <p style={css("margin:10px 0 16px;font-size:15px;line-height:1.5")}>{p.dirWallet ? `On your phone, tap the button. On a computer, scan the code with ${p.dirWallet.name}.` : "Open your wallet app, scan the code and approve the connection."} You'll only sign a message.</p>
           <div style={css("display:grid;place-items:center;width:240px;height:240px;margin:0 auto;background:#fff;border:3px solid #111;border-radius:20px;box-shadow:5px 5px 0 #111")}>
             {p.wcUri ? <Qr value={p.wcUri} /> : <span style={css("font:500 13px 'JetBrains Mono',monospace")}>preparing the code…</span>}
           </div>
           {p.wcUri && (
             <div style={css("display:flex;gap:10px;margin-top:20px")}>
-              <a href={p.wcUri} style={css("flex:1;text-align:center;padding:12px;background:#ffe680;border:3px solid #111;border-radius:14px;font-weight:700")}>Open wallet app</a>
+              <a href={deepLink(p.dirWallet, p.wcUri) ?? p.wcUri} style={css("flex:1;text-align:center;padding:12px;background:#ffe680;border:3px solid #111;border-radius:14px;font-weight:700")}>{p.dirWallet ? `Open ${p.dirWallet.name}` : "Open wallet app"}</a>
               <CopyButton text={p.wcUri} />
             </div>
           )}
@@ -87,7 +94,7 @@ export function WalletModal(p: WalletModalProps) {
           {p.error && <Err text={p.error} />}
         </div>
       )}
-      {p.step >= 2 && (
+      {p.step === 2 && (
         <div>
           <div style={css(title)}>{p.alreadySigned ? "You're already on the wall ✓" : "You're on the wall ✓"}</div>
           <p style={css("margin:10px 0 20px;font-size:15px;line-height:1.5")}>
@@ -104,6 +111,48 @@ export function WalletModal(p: WalletModalProps) {
         </div>
       )}
     </div>
+  );
+}
+
+/** All wallets (WalletConnect directory) with search. Picking one pairs over WalletConnect. */
+function WalletDirectory({ installed, busy, onPick }: { installed: string[]; busy: boolean; onPick: (w: DirWallet | null) => void }) {
+  const [q, setQ] = useState("");
+  const [list, setList] = useState<{ wallets: DirWallet[]; total: number } | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let live = true;
+    const t = setTimeout(() => {
+      fetchDirectory(q)
+        .then((d) => live && (setList(d), setFailed(false)))
+        .catch(() => live && setFailed(true));
+    }, q ? 300 : 0);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+  }, [q]);
+  const shown = (list?.wallets ?? []).filter((w) => !installed.includes(w.name.toLowerCase())).slice(0, 60);
+  return (
+    <>
+      <div style={css(`font:700 11px ${MONO};letter-spacing:.08em;margin:6px 0 10px`)}>ALL WALLETS{list ? ` · ${list.total}+` : ""}</div>
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search wallets…" style={css("display:block;box-sizing:border-box;width:100%;margin-bottom:10px;padding:12px 14px;border:3px solid #111;border-radius:99px;background:#fff;font:500 15px 'DM Sans',sans-serif;color:#111;outline:0")} />
+      <div style={css("max-height:min(36vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:2px 6px 6px 2px;margin:0 -6px 0 -2px")}>
+        {!list && !failed && <div style={css("padding:12px 4px;font:500 13px 'JetBrains Mono',monospace")}>loading wallets…</div>}
+        {failed && <div style={css("padding:12px 4px;font:500 13px 'JetBrains Mono',monospace")}>couldn't load the wallet list. Use “Any other wallet” below.</div>}
+        {shown.map((w, i) => (
+          <button key={w.id} disabled={busy} onClick={() => onPick(w)} style={css(`cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:8px;padding:10px 14px;background:${i % 2 ? "#fffbea" : "#fff"};border:3px solid #111;border-radius:16px;font:700 16px 'DM Sans',sans-serif;color:#111;text-align:left;opacity:${busy ? 0.6 : 1}`)}>
+            <img src={w.icon} alt="" width={30} height={30} loading="lazy" style={css("border-radius:8px;flex:none;background:#f3efff")} />
+            <span style={css("flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap")}>{w.name}</span>
+            <span>→</span>
+          </button>
+        ))}
+        {list && !shown.length && <div style={css("padding:12px 4px;font:500 13px 'JetBrains Mono',monospace")}>no wallet matches “{q}”</div>}
+      </div>
+      <button disabled={busy} onClick={() => onPick(null)} style={css("cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:12px 16px;background:#d9ccff;border:3px solid #111;border-radius:16px;font:800 15px Syne,sans-serif;color:#111;text-align:left")}>
+        <span style={css("flex:1")}>Any other wallet · scan QR code</span>
+        <span>→</span>
+      </button>
+    </>
   );
 }
 

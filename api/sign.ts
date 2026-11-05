@@ -1,6 +1,6 @@
-import { createPublicClient, http, isAddress, isHex, verifyMessage } from "viem";
-import { mainnet } from "viem/chains";
+import { isAddress, isHex, verifyMessage } from "viem";
 import { SIGN_MAX_AGE_MS, buildSignMessage, cleanNote } from "../shared/signMessage.ts";
+import { resolveEns } from "./_lib/ens.ts";
 import { insertSignature } from "./_lib/supabase.ts";
 
 /**
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   const ens = await resolveEns(address);
 
   try {
-    const { row, created } = await insertSignature({ address: lower, ens, note, message, signature });
+    const { row, created } = await insertSignature({ address: lower, ens, note, message, signature, ens_checked_at: new Date().toISOString() });
     return json({ ok: true, created, signer: row }, created ? 201 : 200);
   } catch {
     return json({ error: "unavailable" }, 503);
@@ -40,14 +40,4 @@ export async function POST(request: Request) {
 
 function json(data: unknown, status = 200) {
   return Response.json(data, { status });
-}
-
-/** Best effort: a slow or failing ENS lookup must never block signing. */
-async function resolveEns(address: `0x${string}`): Promise<string | null> {
-  try {
-    const client = createPublicClient({ chain: mainnet, transport: http(process.env.MAINNET_RPC_URL, { timeout: 2500 }) });
-    return (await client.getEnsName({ address })) ?? null;
-  } catch {
-    return null;
-  }
 }

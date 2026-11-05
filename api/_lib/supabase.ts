@@ -1,6 +1,7 @@
 /** Minimal Supabase REST client (PostgREST) for the serverless functions. Service-role key: server only. */
 
 export type SignatureRow = { address: string; ens: string | null; note: string | null; signed_at: string };
+export type StoredRow = SignatureRow & { ens_checked_at: string | null };
 
 function config() {
   const url = process.env.SUPABASE_URL;
@@ -15,18 +16,27 @@ function headers(key: string, extra: Record<string, string> = {}) {
   return { apikey: key, ...auth, "Content-Type": "application/json", ...extra };
 }
 
-export async function listSignatures(limit = 60): Promise<{ items: SignatureRow[]; total: number }> {
+export async function listSignatures(limit = 60): Promise<{ items: StoredRow[]; total: number }> {
   const { url, key } = config();
-  const q = `select=address,ens,note,signed_at&hidden=eq.false&order=signed_at.desc&limit=${limit}`;
+  const q = `select=address,ens,note,signed_at,ens_checked_at&hidden=eq.false&order=signed_at.desc&limit=${limit}`;
   const res = await fetch(`${url}/rest/v1/signatures?${q}`, { headers: headers(key, { Prefer: "count=exact" }) });
   if (!res.ok) throw new Error(`supabase list failed: ${res.status}`);
-  const items = (await res.json()) as SignatureRow[];
+  const items = (await res.json()) as StoredRow[];
   const total = Number(res.headers.get("content-range")?.split("/")[1]);
   return { items, total: Number.isFinite(total) ? total : items.length };
 }
 
+export async function updateEns(address: string, ens: string | null) {
+  const { url, key } = config();
+  await fetch(`${url}/rest/v1/signatures?address=eq.${address}`, {
+    method: "PATCH",
+    headers: headers(key),
+    body: JSON.stringify({ ens, ens_checked_at: new Date().toISOString() }),
+  });
+}
+
 /** Insert once per address. Returns the stored row, and whether it already existed. */
-export async function insertSignature(row: { address: string; ens: string | null; note: string | null; message: string; signature: string }) {
+export async function insertSignature(row: { address: string; ens: string | null; note: string | null; message: string; signature: string; ens_checked_at: string }) {
   const { url, key } = config();
   const res = await fetch(`${url}/rest/v1/signatures?on_conflict=address&select=address,ens,note,signed_at`, {
     method: "POST",

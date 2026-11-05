@@ -67,6 +67,64 @@ export async function cancelConnect(w: WalletOption) {
   await disconnect(config, { connector: w.connector }).catch(() => {});
 }
 
+/* ---------- wallet directory (WalletConnect explorer: 450+ wallets with logos and mobile deep links) ---------- */
+
+const PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
+export const directoryEnabled = !!PROJECT_ID;
+
+export type DirWallet = {
+  id: string;
+  name: string;
+  icon: string;
+  mobile: { native?: string; universal?: string };
+  desktop: { native?: string; universal?: string };
+};
+
+type Listing = { id: string; name: string; image_id: string; mobile?: { native?: string; universal?: string }; desktop?: { native?: string; universal?: string } };
+
+const POPULAR = ["MetaMask", "Rainbow", "Trust Wallet", "Coinbase Wallet", "Phantom", "Rabby", "Zerion", "Ledger Wallet", "Uniswap Wallet", "OKX Wallet", "Safe", "Binance Wallet", "Exodus", "imToken"];
+const rank = (n: string) => {
+  const i = POPULAR.indexOf(n.trim());
+  return i < 0 ? 999 : i;
+};
+
+/** Ethereum-compatible wallets. With no search, the well-known ones come first. */
+export async function fetchDirectory(search = ""): Promise<{ wallets: DirWallet[]; total: number }> {
+  if (!PROJECT_ID) return { wallets: [], total: 0 };
+  const q = new URLSearchParams({ projectId: PROJECT_ID, entries: "100", page: "1", chains: "eip155:1", sdks: "sign_v2" });
+  if (search.trim()) q.set("search", search.trim());
+  const res = await fetch(`https://explorer-api.walletconnect.com/v3/wallets?${q}`);
+  if (!res.ok) throw new Error("directory_unavailable");
+  const data = (await res.json()) as { listings: Record<string, Listing>; total: number };
+  const seen = new Set<string>();
+  let wallets = Object.entries(data.listings)
+    .map<DirWallet>(([id, w]) => ({
+      id,
+      name: w.name.trim(),
+      icon: `https://explorer-api.walletconnect.com/v3/logo/md/${w.image_id}?projectId=${PROJECT_ID}`,
+      mobile: w.mobile ?? {},
+      desktop: w.desktop ?? {},
+    }))
+    .filter((w) => (seen.has(w.name.toLowerCase()) ? false : (seen.add(w.name.toLowerCase()), true)));
+  if (!search.trim()) wallets = wallets.sort((a, b) => rank(a.name) - rank(b.name));
+  return { wallets, total: data.total };
+}
+
+export const isMobileDevice = () => typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+/** Link that opens `w` with the WalletConnect pairing already filled in (phones use the app link, desktops the desktop app). */
+export function deepLink(w: DirWallet | null, uri: string): string | null {
+  if (!w) return null;
+  const pick = isMobileDevice() ? w.mobile : w.desktop;
+  const enc = encodeURIComponent(uri);
+  if (pick.universal) return `${pick.universal.replace(/\/$/, "")}/wc?uri=${enc}`;
+  if (pick.native) {
+    const base = pick.native.endsWith(":") ? pick.native + "//" : pick.native.endsWith("/") ? pick.native : pick.native + "/";
+    return `${base}wc?uri=${enc}`;
+  }
+  return null;
+}
+
 /** Turn wallet / API errors into a short line for the modal. */
 export function explain(e: unknown): string {
   const err = e as { code?: number; name?: string; message?: string };

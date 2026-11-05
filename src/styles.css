@@ -95,7 +95,7 @@ html[data-app=blog] input::placeholder{color:var(--ink)}
   .tl-row{grid-template-columns:minmax(0,1fr)!important}
   .tl-tag{justify-self:start}
   .c-card{padding:28px 20px!important}
-  .c-btn{font-size:min(14px,3.6vw)!important;padding:14px 16px!important;white-space:nowrap;max-width:100%;box-sizing:border-box}
+  .c-btn{font-size:min(12.5px,3.2vw)!important;padding:14px 12px!important;white-space:nowrap;max-width:100%;box-sizing:border-box;text-align:center}
   .c-h{font-size:10.5vw!important}
   /* about: smaller lead text so long pills ("ETHGlobal Istanbul") stay on one line; ID card fits the screen */
   #about [data-reveal]>div:first-child>div:nth-child(2){font-size:clamp(17px,5.2vw,22px)!important}

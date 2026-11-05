@@ -43,6 +43,8 @@ function apiDev(): Plugin {
 }
 
 export default defineConfig({
+  // Besides VITE_*, expose WALLETCONNECT_* to the browser: the WalletConnect project id is public by design.
+  envPrefix: ["VITE_", "WALLETCONNECT_"],
   plugins: [
     apiDev(),
     {

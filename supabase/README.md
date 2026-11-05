@@ -29,7 +29,7 @@ browser: GET /api/signatures      ->  { total, items: latest 60 visible signers 
 
 ## Client helpers
 
-`src/lib/signatures.ts`: `fetchSignatures()`, `signAndSubmit(address, provider.request, note)`. `src/lib/wagmi.ts` + `src/lib/wallet.ts`: headless wagmi (EIP-6963 injected wallets + WalletConnect with our own QR), lazy-loaded when the wallet modal opens. The wallet list (450+ wallets with logos, search, mobile deep links) comes from the WalletConnect explorer. WalletConnect needs `VITE_WALLETCONNECT_PROJECT_ID` (free, dashboard.reown.com); without it that option is hidden. UI: `src/components/SignaturePool.tsx` (physics pool) and `WalletModal` in `src/components/Modals.tsx`.
+`src/lib/signatures.ts`: `fetchSignatures()`, `signAndSubmit(address, provider.request, note)`. `src/lib/wagmi.ts` + `src/lib/wallet.ts`: headless wagmi (EIP-6963 injected wallets + WalletConnect with our own QR), lazy-loaded when the wallet modal opens. The wallet list (450+ wallets with logos, search, mobile deep links) comes from the WalletConnect explorer. WalletConnect needs `WALLETCONNECT_PROJECT_ID` (free, dashboard.reown.com); without it that option is hidden. UI: `src/components/SignaturePool.tsx` (physics pool) and `WalletModal` in `src/components/Modals.tsx`.
 
 ## Local dev
 

@@ -69,7 +69,7 @@ export async function cancelConnect(w: WalletOption) {
 
 /* ---------- wallet directory (WalletConnect explorer: 450+ wallets with logos and mobile deep links) ---------- */
 
-const PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
+const PROJECT_ID = import.meta.env.WALLETCONNECT_PROJECT_ID as string | undefined;
 export const directoryEnabled = !!PROJECT_ID;
 
 export type DirWallet = {

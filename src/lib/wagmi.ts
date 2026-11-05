@@ -6,7 +6,7 @@ import { injected, walletConnect } from "@wagmi/connectors";
  * Headless wallet layer (wagmi). No wagmi UI is used: our own WalletModal renders everything.
  * Loaded lazily (dynamic import) the first time the wallet modal opens, so it never weighs on the first paint.
  */
-export const WC_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
+export const WC_PROJECT_ID = import.meta.env.WALLETCONNECT_PROJECT_ID as string | undefined;
 
 export const config = createConfig({
   chains: [mainnet],

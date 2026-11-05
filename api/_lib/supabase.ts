@@ -10,7 +10,9 @@ function config() {
 }
 
 function headers(key: string, extra: Record<string, string> = {}) {
-  return { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...extra };
+  // New-style keys (sb_secret_...) are not JWTs: they go in `apikey` only. Legacy service_role keys are JWTs and also go in Authorization.
+  const auth: Record<string, string> = key.startsWith("sb_") ? {} : { Authorization: `Bearer ${key}` };
+  return { apikey: key, ...auth, "Content-Type": "application/json", ...extra };
 }
 
 export async function listSignatures(limit = 60): Promise<{ items: SignatureRow[]; total: number }> {

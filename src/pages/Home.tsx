@@ -217,7 +217,7 @@ export default function Home() {
                 </div>
                 <div style={css("padding:22px")}>
                   <div style={css("position:relative;height:190px;border:3px solid #111;border-radius:20px;overflow:hidden;background-color:#e4d9ff;background-image:radial-gradient(rgba(17,17,17,.18) 2px,transparent 2.5px);background-size:22px 22px")}>
-                    <Avatar />
+                    <img src="/umut.webp" alt="Umut Satır" width={640} height={640} style={css("position:absolute;left:50%;bottom:0;height:122%;width:auto;aspect-ratio:1;translate:-50% 0;user-select:none;pointer-events:none")} draggable={false} />
                     <div style={css("position:absolute;top:12px;right:12px;padding:3px 10px;background:#fff;border:3px solid #111;border-radius:12px;box-shadow:3px 3px 0 #111;rotate:6deg;font:800 15px Syne,sans-serif")}>0x</div>
                     <div style={css("position:absolute;top:14px;left:12px;padding:3px 10px;background:#b5efcf;border:3px solid #111;border-radius:12px;box-shadow:3px 3px 0 #111;rotate:-6deg;font:800 15px Syne,sans-serif")}>{"{ }"}</div>
                   </div>
@@ -424,33 +424,5 @@ export default function Home() {
         </div>
       )}
     </div>
-  );
-}
-
-function Avatar() {
-  return (
-    <svg viewBox="0 0 280 190" preserveAspectRatio="xMidYMax meet" style={css("position:absolute;inset:0;width:100%;height:100%")} stroke="#111" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round">
-      <path d="M34 190c0-38 30-56 68-60h76c38 4 68 22 68 60z" fill="#ffe680" />
-      <path d="M98 130c4 28 80 28 84 0" fill="#fff4b0" />
-      <path d="M121 152v22M159 152v22" fill="none" strokeWidth="3.5" />
-      <circle cx="121" cy="177" r="3.5" fill="#111" />
-      <circle cx="159" cy="177" r="3.5" fill="#111" />
-      <path d="M120 104h40v26c-10 10-30 10-40 0z" fill="#ffc7a1" />
-      <circle cx="99" cy="82" r="8" fill="#ffc7a1" />
-      <circle cx="181" cy="82" r="8" fill="#ffc7a1" />
-      <ellipse cx="140" cy="78" rx="41" ry="45" fill="#ffc7a1" />
-      <path d="M97 78c-6-36 18-52 44-52 28 0 46 18 42 52-6-16-18-24-34-26-18 2-38 4-52 26z" fill="#111" />
-      <path d="M114 66q8-5 16 0M150 66q8-5 16 0" fill="none" strokeWidth="3.5" />
-      <circle cx="122" cy="82" r="13" fill="#fff" fillOpacity=".75" />
-      <circle cx="158" cy="82" r="13" fill="#fff" fillOpacity=".75" />
-      <path d="M135 82h10M109 80l-9-3M171 80l9-3" fill="none" strokeWidth="3.5" />
-      <circle cx="123" cy="83" r="3.2" fill="#111" stroke="none" />
-      <circle cx="157" cy="83" r="3.2" fill="#111" stroke="none" />
-      <circle cx="110" cy="100" r="6" fill="#ffa77a" fillOpacity=".55" stroke="none" />
-      <circle cx="170" cy="100" r="6" fill="#ffa77a" fillOpacity=".55" stroke="none" />
-      <path d="M126 103q14 15 28 0z" fill="#fff" strokeWidth="3.5" />
-      <path d="M42 30l4 9 9 4-9 4-4 9-4-9-9-4 9-4z" fill="#ffe680" strokeWidth="3" />
-      <path d="M232 128l3 6 6 3-6 3-3 6-3-6-6-3 6-3z" fill="#fff" strokeWidth="3" />
-    </svg>
   );
 }

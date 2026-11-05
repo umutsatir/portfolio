@@ -1,6 +1,7 @@
 import type { StoredRow } from "./_lib/supabase.js";
-import { listSignatures, updateEns } from "./_lib/supabase.js";
+import { hasSignature, listSignatures, updateEns } from "./_lib/supabase.js";
 import { resolveEns } from "./_lib/ens.js";
+import { isAddress } from "viem";
 import { isProfane } from "../shared/profanity.js";
 
 const STALE_MS = 24 * 3600 * 1000; // rows that have a name
@@ -12,7 +13,17 @@ const REFRESH_PER_REQUEST = 4;
  * Cached briefly at the edge. ENS names that were never checked, or not for 24h (10 min if there is no name yet), are re-resolved a few at a
  * time, so a name registered (or changed) after signing shows up without any manual step.
  */
-export async function GET() {
+export async function GET(request: Request) {
+  // ?address=0x… -> { signed }: lets the client skip the signing step for a wallet that is already on the wall
+  const addr = new URL(request.url).searchParams.get("address");
+  if (addr !== null) {
+    if (!isAddress(addr)) return Response.json({ error: "bad_address" }, { status: 400 });
+    try {
+      return Response.json({ signed: await hasSignature(addr) }, { headers: { "Cache-Control": "no-store" } });
+    } catch {
+      return Response.json({ error: "unavailable" }, { status: 503 });
+    }
+  }
   try {
     const { items, total } = await listSignatures();
     const stale = items

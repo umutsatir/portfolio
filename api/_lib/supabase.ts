@@ -51,3 +51,11 @@ export async function insertSignature(row: { address: string; ens: string | null
   const found = (await existing.json()) as SignatureRow[];
   return { row: found[0] ?? null, created: false };
 }
+
+/** Whether this address already has a row (hidden ones count: moderation must not let them sign again). */
+export async function hasSignature(address: string): Promise<boolean> {
+  const { url, key } = config();
+  const res = await fetch(`${url}/rest/v1/signatures?address=eq.${address.toLowerCase()}&select=address&limit=1`, { headers: headers(key) });
+  if (!res.ok) throw new Error(`supabase lookup failed: ${res.status}`);
+  return ((await res.json()) as unknown[]).length > 0;
+}

@@ -6,7 +6,7 @@ import { projects, skills } from "../data/work";
 import { EMAIL, aboutWords, kv, links, navTabs, timeline } from "../data/site";
 import { CaseModal, WalletModal } from "../components/Modals";
 import SignaturePool, { type PoolStatus } from "../components/SignaturePool";
-import { fetchSignatures, signAndSubmit, type Signer } from "../lib/signatures";
+import { fetchSignatures, isSigned, signAndSubmit, type Signer } from "../lib/signatures";
 import { cancelConnect, connectWallet, explain, listWallets, type Connected, type DirWallet, type WalletOption } from "../lib/wallet";
 
 const SPRING = "cubic-bezier(.34,1.56,.64,1)";
@@ -74,6 +74,15 @@ export default function Home() {
     try {
       const c = await connectWallet(w, setWcUri);
       if (id !== attempt.current) return void c.disconnect().catch(() => {}); // visitor went back meanwhile
+      if (await isSigned(c.address)) {
+        if (id !== attempt.current) return void c.disconnect().catch(() => {});
+        setAlready(true);
+        setDone(true);
+        setStep(2);
+        c.disconnect().catch(() => {});
+        return;
+      }
+      if (id !== attempt.current) return void c.disconnect().catch(() => {});
       setAccount(c);
       setStep(1);
     } catch (e) {

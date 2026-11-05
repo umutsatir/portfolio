@@ -11,6 +11,17 @@ export async function fetchSignatures(): Promise<SignatureList> {
   return (await res.json()) as SignatureList;
 }
 
+/** True when this address is already on the wall (so there is nothing to sign). Errors are treated as "unknown" -> false; the API still de-dupes. */
+export async function isSigned(address: string): Promise<boolean> {
+  try {
+    const res = await fetch("/api/signatures?address=" + encodeURIComponent(address), { cache: "no-store" });
+    if (!res.ok) return false;
+    return Boolean(((await res.json()) as { signed?: boolean }).signed);
+  } catch {
+    return false;
+  }
+}
+
 export type SignResult = { ok: true; created: boolean; signer: Signer | null };
 
 /** The text the wallet will show. Same builder the API verifies against. */

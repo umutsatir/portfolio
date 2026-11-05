@@ -73,6 +73,6 @@ export const skills: SkillGroup[] = [
         { name: 'Backend & data', note: '// daily driver', bg: '#ffe680', line: 'solid', items: ['Node.js', 'TypeScript', 'PHP', 'FastAPI', 'MongoDB', 'MySQL', 'PostgreSQL', 'Python'] },
         { name: 'Frontend', note: '// daily driver', bg: '#b5efcf', line: 'solid', items: ['React', 'Next.js', 'TypeScript'] },
         { name: 'Infra', note: '// comfortable', bg: '#b9defa', line: 'solid', items: ['Docker', 'AWS', 'Linux'] },
-        { name: 'Web3 & ZK', note: '// ships to mainnet every week', bg: '#ffc7a1', line: 'solid', items: ['Solidity', 'Noir', 'zk-proofs', 'Distributed systems', 'Hardhat', 'wagmi / viem'] },
+        { name: 'Web3 & ZK', note: '// ships to mainnet every week', bg: '#ffc7a1', line: 'solid', items: ['o1js', 'Solidity', 'Noir', 'zk-proofs', 'Distributed systems', 'Hardhat', 'wagmi / viem'] },
         { name: 'Exploring', note: '// dangerous enough to ask good questions', bg: '#fff', line: 'dashed', items: ['Rust', 'Move'] }
 ];

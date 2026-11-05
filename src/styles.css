@@ -32,4 +32,7 @@ input::placeholder{color:#111;opacity:.5}
 .rise-kids>:nth-child(7){animation-delay:.47s}.rise-kids>:nth-child(8){animation-delay:.54s}
 .rise-kids>:nth-child(9){animation-delay:.61s}.rise-kids>:nth-child(10){animation-delay:.68s}
 .rise-kids>:nth-child(11){animation-delay:.75s}.rise-kids>:nth-child(12){animation-delay:.82s}
-@media (prefers-reduced-motion:reduce){.rise,.chipin,.grow,.rise-kids>*{animation:none}}
+/* same, but via translate/scale so elements with an inline transform (rotated stickers) don't snap */
+@keyframes rise2{from{opacity:0;translate:0 28px;scale:.97}to{opacity:1;translate:0 0;scale:1}}
+.rise-t{animation:rise2 .7s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0)*var(--s,80ms))}
+@media (prefers-reduced-motion:reduce){.rise-t,.rise,.chipin,.grow,.rise-kids>*{animation:none}}

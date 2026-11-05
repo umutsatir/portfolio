@@ -1,5 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect x="8" y="8" width="54" height="54" rx="16" fill="#ffe680"/>
-  <rect x="2" y="2" width="54" height="54" rx="16" fill="#111"/>
-  <path d="M20.5 15v18a8.5 8.5 0 0 0 17 0V15" transform="translate(1 3)" fill="none" stroke="#ffe680" stroke-width="8"/>
+  <style>
+    .shadow{fill:#ffe680}
+    .tile{fill:#111}
+    .u{stroke:#ffe680}
+    @media (prefers-color-scheme: dark){
+      .shadow{fill:#fff}
+      .tile{fill:#ffe680}
+      .u{stroke:#111}
+    }
+  </style>
+  <rect class="shadow" x="8" y="8" width="54" height="54" rx="16"/>
+  <rect class="tile" x="2" y="2" width="54" height="54" rx="16"/>
+  <path class="u" d="M20.5 15v18a8.5 8.5 0 0 0 17 0V15" transform="translate(1 3)" fill="none" stroke-width="8"/>
 </svg>

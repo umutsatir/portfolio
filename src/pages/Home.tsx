@@ -48,9 +48,7 @@ export default function Home() {
     }
   }, []);
   useEffect(() => {
-    // ?demo-pool previews the pool with sample signers (design review / no database needed)
-    if (new URLSearchParams(location.search).has("demo-pool")) setPool({ status: "ok", items: demoSigners(), total: 128 });
-    else loadPool();
+    loadPool();
   }, [loadPool]);
 
   const openWallet = () => {
@@ -594,27 +592,4 @@ export default function Home() {
       )}
     </div>
   );
-}
-
-/** Sample signers for ?demo-pool. */
-function demoSigners(): Signer[] {
-  const D: Array<[string, string, string]> = [
-    ["mira.eth", "gm. the zk voting case study is wild.", "2m"],
-    ["0x91b2c0de7a1f3344a0b8c9d1e2f3a4b50007aa", "hire this man", "14m"],
-    ["kerem.eth", "solidity that holds money should be boring. agreed.", "1h"],
-    ["0xd4e8c0de7a1f3344a0b8c9d1e2f3a4b503b10", "gm from Berlin", "3h"],
-    ["selin.eth", "node101 is lucky.", "5h"],
-    ["0x5c0fc0de7a1f3344a0b8c9d1e2f3a4b5e2d9", "ship it.", "1d"],
-    ["anon.eth", "sticker wall > landing page", "1d"],
-    ["0xa11cc0de7a1f3344a0b8c9d1e2f3a4b59f42", "zk or die", "2d"],
-  ];
-  const unit = (t: string) => (t.endsWith("m") ? 60e3 : t.endsWith("h") ? 3600e3 : 86400e3);
-  return Array.from({ length: 5 }, (_, k) =>
-    D.map(([n, note, t], i) => ({
-      address: (n.startsWith("0x") ? n.slice(0, 38) + String(k).padStart(2, "0") + n.slice(-2) : n + "-" + k).toLowerCase(),
-      ens: n.endsWith(".eth") ? n : null,
-      note,
-      signed_at: new Date(Date.now() - parseInt(t) * unit(t) - i * 1000).toISOString(),
-    })),
-  ).flat();
 }

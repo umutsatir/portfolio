@@ -41,7 +41,7 @@ function EnsAvatar({ name }: { name: string }) {
   );
 }
 
-type Body = { r: number; x: number; y: number; vx: number; vy: number };
+type Body = { r: number; x: number; y: number; vx: number; vy: number; inside: boolean };
 
 export type PoolStatus = "loading" | "ok" | "offline";
 
@@ -51,7 +51,28 @@ export type PoolStatus = "loading" | "ok" | "offline";
  */
 export default function SignaturePool({ items, total, status, onSign }: { items: Signer[]; total: number; status: PoolStatus; onSign: () => void }) {
   const poolRef = useRef<HTMLDivElement>(null);
-  const infoRef = useRef<HTMLDivElement>(null);
+  const infoRef = useRef<HTMLSpanElement>(null);
+  const infoBoxRef = useRef<HTMLDivElement>(null);
+  const infoAnim = useRef<Animation | null>(null);
+
+  /** Show text in the info bar; if it is wider than the bar it slowly scrolls (and pauses at both ends). */
+  const setInfo = (text: string) => {
+    const t = infoRef.current;
+    const box = infoBoxRef.current;
+    if (!t || !box) return;
+    infoAnim.current?.cancel();
+    infoAnim.current = null;
+    t.textContent = text;
+    requestAnimationFrame(() => {
+      const over = t.scrollWidth - box.clientWidth;
+      if (over > 2 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        infoAnim.current = t.animate(
+          [{ transform: "translateX(0)" }, { transform: "translateX(0)", offset: 0.15 }, { transform: `translateX(${-over}px)`, offset: 0.85 }, { transform: `translateX(${-over}px)` }],
+          { duration: 3200 + over * 28, iterations: Infinity, direction: "alternate", easing: "linear" },
+        );
+      }
+    });
+  };
   const els = useRef(new Map<string, HTMLElement>());
   const bodies = useRef(new Map<string, Body>());
   const active = useRef(false);
@@ -63,7 +84,8 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
   const defaultRef = useRef(defaultInfo);
   defaultRef.current = defaultInfo;
   useEffect(() => {
-    if (infoRef.current) infoRef.current.textContent = defaultInfo;
+    setInfo(defaultInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultInfo]);
 
   // keep the simulation bodies in sync with the data: new signers drop in from the top
@@ -77,7 +99,7 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
     items.forEach((s) => {
       if (bodies.current.has(s.address)) return;
       const r = (looks.get(s.address)?.d ?? 60) / 2;
-      bodies.current.set(s.address, { r, x: r + Math.random() * Math.max(1, W - 2 * r), y: -r - fresh++ * 70, vx: (Math.random() - 0.5) * 3, vy: 0 });
+      bodies.current.set(s.address, { r, x: r + Math.random() * Math.max(1, W - 2 * r), y: -r - fresh++ * 70, vx: (Math.random() - 0.5) * 3, vy: 0, inside: false });
     });
   }, [items, looks]);
 
@@ -142,10 +164,9 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
     on(document, "pointercancel", up);
     on(document, "pointerover", (ev) => {
       const k = ballKey(ev.target);
-      const info = infoRef.current;
-      if (!k || !info) return;
+      if (!k) return;
       const e = els.current.get(k)!;
-      info.textContent = e.dataset.name + " · " + e.dataset.time + (e.dataset.note ? ' — "' + e.dataset.note + '"' : "");
+      setInfo(e.dataset.name + " · " + e.dataset.time + (e.dataset.note ? ' — "' + e.dataset.note + '"' : ""));
     });
 
     let raf = 0;
@@ -163,6 +184,7 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
           b.x = Math.max(b.r, Math.min(W - b.r, b.x));
           const fl = H - b.r - 3;
           if (b.y > fl) b.y = fl;
+          if (b.inside && b.y < b.r) b.y = b.r; // ceiling: once a ball is in the box it never leaves it
         };
         if (dragged) {
           dragged.vx *= 0.8;
@@ -187,6 +209,11 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
               b.y = fl;
               if (b.vy > 0) b.vy = b.vy > 0.5 ? -b.vy * 0.8 : 0;
               b.vx *= 0.995;
+            }
+            if (b.y >= b.r) b.inside = true; // new signers spawn above the box and fall in
+            if (b.inside && b.y < b.r) {
+              b.y = b.r;
+              if (b.vy < 0) b.vy *= -0.8;
             }
           });
           for (let it = 0; it < 5; it++) {
@@ -254,10 +281,17 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
     <section id="signatures" style={css("max-width:1380px;margin:0 auto;padding:100px clamp(18px,4vw,52px) 60px")}>
       <div data-reveal>
         <div ref={poolRef} data-pool style={css("position:relative;height:clamp(460px,52vw,580px);overflow:hidden;background:#b8a4ff;border:3px solid #111;border-radius:32px;box-shadow:10px 10px 0 #111")}>
-          <div style={css("position:absolute;left:clamp(16px,2.4vw,30px);top:clamp(16px,2.4vw,28px);z-index:3;pointer-events:none")}>
-            <div style={css("font:700 12px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em")}>/ signatures</div>
-            <div style={css("margin-top:10px;display:inline-block;padding:10px 18px;background:#111;color:#ffe680;border-radius:20px;box-shadow:5px 5px 0 #fff;font:800 clamp(44px,5vw,68px)/1 Syne,sans-serif;letter-spacing:-.05em;transform:rotate(-3deg)")}>
-              {total} <span style={css("font-size:.38em;color:#fff;letter-spacing:-.02em")}>signed</span>
+          <div style={css("position:absolute;left:clamp(16px,2.4vw,30px);right:clamp(12px,1.8vw,22px);top:clamp(16px,2.4vw,28px);z-index:3;pointer-events:none;display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px 18px")}>
+            <div style={css("flex:none")}>
+              <div style={css("font:700 12px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em")}>/ signatures</div>
+              <div style={css("margin-top:10px;display:inline-block;padding:10px 18px;background:#111;color:#ffe680;border-radius:20px;box-shadow:5px 5px 0 #fff;font:800 clamp(44px,5vw,68px)/1 Syne,sans-serif;letter-spacing:-.05em;transform:rotate(-3deg)")}>
+                {total} <span style={css("font-size:.38em;color:#fff;letter-spacing:-.02em")}>signed</span>
+              </div>
+            </div>
+            <div data-info style={css("flex:1 1 230px;min-width:0;margin-top:26px;padding:11px 18px;background:#fff;border:3px solid #111;border-radius:99px;box-shadow:4px 4px 0 #111;font:700 13px 'JetBrains Mono',monospace")}>
+              <div ref={infoBoxRef} style={css("overflow:hidden;white-space:nowrap")}>
+                <span ref={infoRef} style={css("display:inline-block;will-change:transform")} />
+              </div>
             </div>
           </div>
           {items.map((s) => {
@@ -285,11 +319,6 @@ export default function SignaturePool({ items, total, status, onSign }: { items:
               </div>
             );
           })}
-          <div
-            ref={infoRef}
-            data-info
-            style={css("position:absolute;left:clamp(12px,1.8vw,22px);right:clamp(150px,18vw,230px);bottom:clamp(12px,1.8vw,20px);z-index:4;pointer-events:none;padding:11px 18px;background:#fff;border:3px solid #111;border-radius:99px;box-shadow:4px 4px 0 #111;font:700 13px 'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis")}
-          />
           <button
             onClick={onSign}
             {...P(

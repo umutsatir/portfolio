@@ -57,9 +57,23 @@ html[data-app=blog] input::placeholder{color:var(--ink)}
   .hero-art{grid-area:art;width:600px;height:430px;min-height:0;zoom:var(--hz,.5);margin-top:18px}
 }
 
-/* compact header (hamburger) wherever the desktop header no longer fits; hero stops centring in a tall box */
+/* header: full desktop header down to tablets (compacted), hamburger only on phones */
 .hdr-menu{display:none!important}
-@media (max-width:1019px){
+@media (max-width:1019px) and (min-width:721px){
+  .hdr{gap:8px!important;padding:14px 14px!important;align-items:center!important}
+  .hdr>a{padding:6px 12px!important;font-size:18px!important}
+  .hdr-nav{gap:6px!important;padding:14px 10px!important;margin:-12px -4px!important}
+  .hdr-nav a{padding:7px 11px!important;font-size:13px!important}
+  .hdr-right{gap:8px!important}
+  .hdr-right a,.hdr-right button{padding:8px 12px!important;font-size:13px!important}
+}
+@media (max-width:860px) and (min-width:721px){
+  .hdr>a{font-size:16px!important;padding:5px 10px!important}
+  .hdr-nav{gap:4px!important}
+  .hdr-nav a{padding:6px 9px!important;font-size:12px!important}
+  .hdr-right a,.hdr-right button{padding:7px 10px!important;font-size:12px!important}
+}
+@media (max-width:720px){
   .hdr-nav,.hdr-right{display:none!important}
   .hdr-menu{display:flex!important}
   .hdr{padding:12px 14px!important;align-items:center!important}

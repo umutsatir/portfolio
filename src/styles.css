@@ -58,16 +58,13 @@ html[data-app=blog] input::placeholder{color:var(--ink)}
 }
 
 /* phones */
+.hdr-menu{display:none!important}
 @media (max-width:720px){
-  .hdr{flex-wrap:wrap!important;row-gap:6px!important;padding:12px 14px 0!important}
-  .hdr-nav{order:3;flex:1 1 100%!important;margin:0!important;padding:6px 4px 12px!important}
-  .hdr-right{gap:8px!important}
-  .hdr-nav{gap:8px!important}
-  .hdr-nav a{padding:8px 12px!important;font-size:13px!important}
-  .hdr a,.hdr button{font-size:13px!important}
-  .hdr-right a,.hdr-right button{padding:8px 12px!important}
+  .hdr-nav,.hdr-right{display:none!important}
+  .hdr-menu{display:flex!important}
+  .hdr{padding:12px 14px!important;align-items:center!important}
   .hdr>a{padding:6px 14px!important;font-size:19px!important}
-  .hero{padding-top:150px!important;padding-bottom:60px!important}
+  .hero{padding-top:110px!important;padding-bottom:60px!important}
 }
 @media (max-width:519px){
   .hero-art{width:600px;height:430px;min-height:0;zoom:var(--hz,.59);margin-top:10px}

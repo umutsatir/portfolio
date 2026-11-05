@@ -21,6 +21,7 @@ export default function Home() {
   const [ci, setCi] = useState(0);
   const [sk, setSk] = useState(0);
   const [ah, setAh] = useState(-1);
+  const [menu, setMenu] = useState(false);
   const skUser = useRef(false);
 
   useHomeEffects({ skillCount: skills.length, skUser, setSk, setActive });
@@ -36,11 +37,24 @@ export default function Home() {
 
   // body scroll lock while a modal is open
   useEffect(() => {
-    document.documentElement.style.overflow = modal ? "hidden" : "";
+    document.documentElement.style.overflow = modal || menu ? "hidden" : "";
     return () => {
       document.documentElement.style.overflow = "";
     };
-  }, [modal]);
+  }, [modal, menu]);
+
+  // the phone menu must not stay open when the window grows past the phone layout
+  useEffect(() => {
+    const close = () => innerWidth > 720 && setMenu(false);
+    addEventListener("resize", close);
+    return () => removeEventListener("resize", close);
+  }, []);
+
+  const goTo = (id: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMenu(false);
+    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }));
+  };
 
   const pickSkill = (n: number) => {
     setSk(n);
@@ -109,7 +123,53 @@ export default function Home() {
             {done ? "Connected ✓" : "Connect wallet"}
           </button>
         </div>
+        <button
+          onClick={() => setMenu((m) => !m)}
+          aria-expanded={menu}
+          aria-label={menu ? "Close menu" : "Open menu"}
+          {...P(
+            `pointer-events:auto;flex:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:9px 16px;background:${menu ? "#111" : "#ffe680"};color:${menu ? "#ffe680" : "#111"};border:3px solid #111;border-radius:16px;box-shadow:4px 4px 0 ${menu ? "#ffe680" : "#111"};font:700 14px 'DM Sans',sans-serif;transform:rotate(2deg);transition:transform .2s ${SPRING},box-shadow .2s,background .2s,color .2s`,
+            { h: "transform:rotate(-2deg) scale(1.06)" },
+            "hdr-menu",
+          )}
+        >
+          <span style={css("font:800 17px/1 Syne,sans-serif")}>{menu ? "✕" : "☰"}</span>
+          {menu ? "Close" : "Menu"}
+        </button>
       </header>
+
+      {menu && (
+        <div style={css("position:fixed;inset:0;z-index:900;overflow:auto;padding:104px 20px 32px;box-sizing:border-box;background-color:#d9ccff;background-image:radial-gradient(rgba(255,150,100,.6) 1.5px,transparent 2px);background-size:28px 28px;animation:pop .22s ease-out;display:flex;flex-direction:column;gap:14px")}>
+          {navTabs.map(([id, label], i) => (
+            <a
+              key={id}
+              href={"#" + id}
+              onClick={goTo(id)}
+              className="rise-t"
+              style={css(`--i:${i};--s:60ms;display:flex;align-items:center;gap:14px;padding:16px 22px;background:${active === id ? "#ffe680" : "#fff"};border:3px solid #111;border-radius:22px;box-shadow:5px 5px 0 #111;font:800 clamp(22px,7.2vw,32px) Syne,sans-serif;letter-spacing:-.03em;rotate:${[-1.5, 1, -1, 1.5][i]}deg`)}
+            >
+              <span style={css(`font:700 13px ${MONO};letter-spacing:0;opacity:.6`)}>{String(i + 1).padStart(2, "0")}</span>
+              <span style={css("flex:1")}>{label}</span>
+              <span>→</span>
+            </a>
+          ))}
+          <div className="rise-t" style={css("--i:4;--s:60ms;display:flex;flex-wrap:wrap;gap:12px;margin-top:10px")}>
+            <a href={BLOG_URL} style={css("flex:1 1 130px;text-align:center;padding:14px 18px;background:#111;color:#fff;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #ffe680;font:700 16px 'DM Sans',sans-serif")}>
+              Blog ↗
+            </a>
+            <button
+              onClick={() => {
+                setMenu(false);
+                setModal("wallet");
+                setStep(done ? 2 : 0);
+              }}
+              style={css("flex:1 1 130px;cursor:pointer;padding:14px 18px;background:#ffe680;color:#111;border:3px solid #111;border-radius:18px;box-shadow:4px 4px 0 #111;font:700 16px 'DM Sans',sans-serif")}
+            >
+              {done ? "Connected ✓" : "Connect wallet"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <section id="top" data-hero className="hero" style={css("position:relative;padding:130px clamp(18px,4vw,52px) 90px;max-width:1380px;margin:0 auto;box-sizing:border-box;min-height:100vh")}>
         <div style={css("position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,150,100,.6) 1.5px,transparent 2px);background-size:28px 28px;-webkit-mask-image:radial-gradient(360px circle at var(--hx,70%) var(--hy,40%),#000,transparent 70%);mask-image:radial-gradient(360px circle at var(--hx,70%) var(--hy,40%),#000,transparent 70%)")} />

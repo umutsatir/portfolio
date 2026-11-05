@@ -43,3 +43,18 @@ html[data-app=blog] body{background:var(--bg);color:var(--ink)}
 html[data-app=blog][data-theme=dark] ::selection{background:#ffe680;color:#111}
 html[data-app=blog][data-theme=dark] mark[data-bt-hl]{color:#111}
 html[data-app=blog] input::placeholder{color:var(--ink)}
+/* hero layout: two columns on desktop; stickers sit beside the copy on mid widths; stacked on phones */
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:30px 40px;align-items:center}
+.hero-art{position:relative;height:min(560px,92vw);min-height:440px;min-width:0}
+@media (min-width:1344px){.hero{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:760px) and (max-width:1343px){
+  /* the sticker collage keeps its desktop proportions (600x430) and is just scaled down with the viewport */
+  .hero{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"badge badge" "h1 h1" "copy art";gap:0 40px;align-content:center;align-items:start}
+  .hero-left{display:contents}
+  .hero-badge{grid-area:badge;justify-self:start}
+  .hero-h1{grid-area:h1}
+  .hero-copy{grid-area:copy}
+  .hero-art{grid-area:art;width:600px;height:430px;min-height:0;zoom:.8;margin-top:18px}
+}
+@media (min-width:900px) and (max-width:1099px){.hero-art{zoom:.66}}
+@media (min-width:760px) and (max-width:899px){.hero-art{zoom:.52}}

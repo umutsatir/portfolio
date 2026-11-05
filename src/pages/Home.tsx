@@ -102,14 +102,14 @@ export default function Home() {
         </div>
       </header>
 
-      <section id="top" data-hero style={css("position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,600px),1fr));gap:30px 40px;align-items:center;padding:130px clamp(18px,4vw,52px) 90px;max-width:1380px;margin:0 auto;box-sizing:border-box;min-height:100vh")}>
+      <section id="top" data-hero className="hero" style={css("position:relative;padding:130px clamp(18px,4vw,52px) 90px;max-width:1380px;margin:0 auto;box-sizing:border-box;min-height:100vh")}>
         <div style={css("position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,150,100,.6) 1.5px,transparent 2px);background-size:28px 28px;-webkit-mask-image:radial-gradient(360px circle at var(--hx,70%) var(--hy,40%),#000,transparent 70%);mask-image:radial-gradient(360px circle at var(--hx,70%) var(--hy,40%),#000,transparent 70%)")} />
-        <div style={css("position:relative;min-width:0")}>
-          <div className="rise-t" style={css("display:inline-block;padding:8px 16px;background:#fff;border:3px solid #111;border-radius:99px;font-weight:700;font-size:14px;transform:rotate(-2deg);--i:2")}>
+        <div className="hero-left" style={css("position:relative;min-width:0")}>
+          <div className="rise-t hero-badge" style={css("display:inline-block;padding:8px 16px;background:#fff;border:3px solid #111;border-radius:99px;font-weight:700;font-size:14px;transform:rotate(-2deg);--i:2")}>
             <i style={css("display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin-right:8px;animation:blink 1.2s infinite")} />
             Online · Istanbul, UTC+3
           </div>
-          <h1 className="rise-t" style={css("margin:22px 0 0;font:800 clamp(44px,6.4vw,112px)/.94 Syne,sans-serif;letter-spacing:-.045em;--i:3")}>
+          <h1 className="rise-t hero-h1" style={css("margin:22px 0 0;font:800 clamp(44px,6.4vw,112px)/.94 Syne,sans-serif;letter-spacing:-.045em;--i:3")}>
             I make{" "}
             <span
               data-decrypt
@@ -122,6 +122,7 @@ export default function Home() {
             </span>{" "}
             less scary.
           </h1>
+          <div className="hero-copy">
           <p className="rise-t" style={css("margin:28px 0 0;max-width:540px;font-size:19px;line-height:1.55;font-weight:500;--i:4")}>
             I'm <b>Umut Satır</b>, a blockchain &amp; fullstack engineer. Day to day:{" "}
             <span data-rotate data-words="APIs & databases|distributed systems|smart contracts|zk-proofs" style={css(`display:inline-block;padding:0 8px;background:#ffa77a;color:#111;border-radius:8px;font:700 17px ${MONO}`)}>
@@ -136,8 +137,9 @@ export default function Home() {
               Say hi
             </a>
           </div>
+          </div>
         </div>
-        <div className="rise-t" style={css("position:relative;height:min(560px,92vw);min-height:440px;min-width:0;--i:4")}>
+        <div className="rise-t hero-art" style={css("--i:4")}>
           <div style={css("position:absolute;left:0;top:0;width:min(60%,360px);padding:20px;background:#fff;border:3px solid #111;border-radius:26px;box-shadow:8px 8px 0 #111;transform:rotate(-5deg);animation:bob1 5s ease-in-out infinite")}>
             <div style={css("font:700 12px 'JetBrains Mono';text-transform:uppercase;letter-spacing:.08em;opacity:.6")}>pragma solidity ^0.8</div>
             <div style={css("margin-top:8px;font:800 28px/1.05 Syne,sans-serif;letter-spacing:-.03em")}>Code that holds money should be boring.</div>
